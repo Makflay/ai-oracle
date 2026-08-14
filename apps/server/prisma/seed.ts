@@ -18,7 +18,45 @@ const sources = [
   },
 ] as const;
 
-async function seed(): Promise<void> {
+const entities = [
+  {
+    slug: "qwen",
+    name: "Qwen",
+    symbol: "QWEN",
+    description:
+      "AI model family tracked for project popularity and developer interest.",
+  },
+  {
+    slug: "deepseek",
+    name: "DeepSeek",
+    symbol: "DEEPSEEK",
+    description:
+      "AI model family tracked for project popularity and developer interest.",
+  },
+  {
+    slug: "mistral",
+    name: "Mistral",
+    symbol: "MISTRAL",
+    description:
+      "AI model family tracked for project popularity and developer interest.",
+  },
+  {
+    slug: "gemma",
+    name: "Gemma",
+    symbol: "GEMMA",
+    description:
+      "AI model family tracked for project popularity and developer interest.",
+  },
+  {
+    slug: "ai-developer-interest",
+    name: "AI Developer Interest",
+    symbol: "AI_DEV_INTEREST",
+    description:
+      "System entity representing aggregated global developer interest in AI.",
+  },
+] as const;
+
+async function seedSources(): Promise<void> {
   await Promise.all(
     sources.map((source) =>
       prisma.source.upsert({
@@ -39,6 +77,33 @@ async function seed(): Promise<void> {
       }),
     ),
   );
+}
+
+async function seedEntities(): Promise<void> {
+  await Promise.all(
+    entities.map((entity) =>
+      prisma.entity.upsert({
+        where: {
+          slug: entity.slug,
+        },
+        update: {
+          name: entity.name,
+          symbol: entity.symbol,
+          description: entity.description,
+        },
+        create: {
+          slug: entity.slug,
+          name: entity.name,
+          symbol: entity.symbol,
+          description: entity.description,
+        },
+      }),
+    ),
+  );
+}
+
+async function seed(): Promise<void> {
+  await Promise.all([seedSources(), seedEntities()]);
 }
 
 try {
