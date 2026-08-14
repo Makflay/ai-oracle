@@ -16,3 +16,11 @@ export type {
   HuggingFaceAdapterOptions,
   HuggingFaceModelData,
 } from "./hugging-face/index.js";
+
+export { HackerNewsDataSource } from "./hacker-news/index.js";
+
+export type {
+  HackerNewsAdapterOptions,
+  HackerNewsFeed,
+  HackerNewsStoryData,
+} from "./hacker-news/index.js";
