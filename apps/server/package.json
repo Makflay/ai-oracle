@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-oracle/shared": "*",
     "express": "^5.2.1",
-    "@ai-oracle/shared": "*"
+    "zod": "^4.4.3"
   }
 }
