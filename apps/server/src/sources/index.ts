@@ -24,3 +24,10 @@ export type {
   HackerNewsFeed,
   HackerNewsStoryData,
 } from "./hacker-news/index.js";
+
+export { ArxivDataSource } from "./arxiv/index.js";
+
+export type {
+  ArxivAdapterOptions,
+  ArxivPublicationData,
+} from "./arxiv/index.js";
