@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,183 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum ForecastType {
+  SHORT_TERM  @map("short_term")
+  MEDIUM_TERM @map("medium_term")
+  LONG_TERM   @map("long_term")
+
+  @@map("forecast_type")
+}
+
+enum PredictionDirection {
+  UP      @map("up")
+  DOWN    @map("down")
+  NEUTRAL @map("neutral")
+
+  @@map("prediction_direction")
+}
+
+enum RiskLevel {
+  LOW    @map("low")
+  MEDIUM @map("medium")
+  HIGH   @map("high")
+
+  @@map("risk_level")
+}
+
+enum ForecastStatus {
+  PENDING   @map("pending")
+  RUNNING   @map("running")
+  COMPLETED @map("completed")
+  FAILED    @map("failed")
+
+  @@map("forecast_status")
+}
+
+enum MetricType {
+  PRICE      @map("price")
+  VOLUME     @map("volume")
+  VOLATILITY @map("volatility")
+  MOMENTUM   @map("momentum")
+  SENTIMENT  @map("sentiment")
+
+  @@map("metric_type")
+}
+
+model Source {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String   @unique
+  name      String
+  baseUrl   String?  @map("base_url")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  rawRecords RawRecord[]
+
+  @@index([isActive])
+  @@map("sources")
+}
+
+model Entity {
+  id          String   @id @default(uuid()) @db.Uuid
+  slug        String   @unique
+  name        String
+  symbol      String?
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  rawRecords RawRecord[]
+  metrics    Metric[]
+  forecasts  Forecast[]
+
+  @@index([symbol])
+  @@map("entities")
+}
+
+model RawRecord {
+  id         String   @id @default(uuid()) @db.Uuid
+  sourceId   String   @map("source_id") @db.Uuid
+  entityId   String?  @map("entity_id") @db.Uuid
+  externalId String?  @map("external_id")
+  checksum   String
+  observedAt DateTime @map("observed_at")
+  ingestedAt DateTime @default(now()) @map("ingested_at")
+  payload    Json     @db.JsonB
+
+  source Source  @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  entity Entity? @relation(fields: [entityId], references: [id], onDelete: Restrict)
+  metrics Metric[]
+
+  @@unique([sourceId, checksum])
+  @@index([sourceId, observedAt])
+  @@index([sourceId, externalId])
+  @@index([entityId, observedAt])
+  @@index([ingestedAt])
+  @@map("raw_records")
+}
+
+model Metric {
+  id          String     @id @default(uuid()) @db.Uuid
+  entityId    String     @map("entity_id") @db.Uuid
+  rawRecordId String?    @map("raw_record_id") @db.Uuid
+  type        MetricType
+  value       Decimal    @db.Decimal(24, 8)
+  unit        String?
+  observedAt  DateTime   @map("observed_at")
+  calculatedAt DateTime  @default(now()) @map("calculated_at")
+
+  entity    Entity     @relation(fields: [entityId], references: [id], onDelete: Restrict)
+  rawRecord RawRecord? @relation(fields: [rawRecordId], references: [id], onDelete: Restrict)
+  factors   ForecastFactor[]
+
+  @@index([entityId, type, observedAt(sort: Desc)])
+  @@index([rawRecordId])
+  @@index([calculatedAt])
+  @@map("metrics")
+}
+
+model Forecast {
+  id             String               @id @default(uuid()) @db.Uuid
+  entityId       String               @map("entity_id") @db.Uuid
+  type           ForecastType
+  status         ForecastStatus       @default(PENDING)
+  direction      PredictionDirection?
+  riskLevel      RiskLevel?           @map("risk_level")
+  confidence     Decimal?             @db.Decimal(5, 4)
+  predictedValue Decimal?             @map("predicted_value") @db.Decimal(24, 8)
+  summary        String?
+  failureReason  String?              @map("failure_reason")
+  modelVersion   String?              @map("model_version")
+  targetAt       DateTime             @map("target_at")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  completedAt    DateTime?            @map("completed_at")
+
+  entity  Entity             @relation(fields: [entityId], references: [id], onDelete: Restrict)
+  factors ForecastFactor[]
+  outcome ForecastOutcome?
+
+  @@index([entityId, type, createdAt(sort: Desc)])
+  @@index([entityId, targetAt])
+  @@index([status, createdAt])
+  @@index([targetAt])
+  @@map("forecasts")
+}
+
+model ForecastFactor {
+  id          String              @id @default(uuid()) @db.Uuid
+  forecastId  String              @map("forecast_id") @db.Uuid
+  metricId    String?             @map("metric_id") @db.Uuid
+  metricType  MetricType          @map("metric_type")
+  direction   PredictionDirection
+  weight      Decimal             @db.Decimal(7, 6)
+  description String
+  position    Int
+  createdAt   DateTime            @default(now()) @map("created_at")
+
+  forecast Forecast @relation(fields: [forecastId], references: [id], onDelete: Restrict)
+  metric   Metric?  @relation(fields: [metricId], references: [id], onDelete: Restrict)
+
+  @@unique([forecastId, position])
+  @@index([forecastId])
+  @@index([metricId])
+  @@map("forecast_factors")
+}
+
+model ForecastOutcome {
+  id              String              @id @default(uuid()) @db.Uuid
+  forecastId      String              @unique @map("forecast_id") @db.Uuid
+  actualDirection PredictionDirection @map("actual_direction")
+  actualValue     Decimal?            @map("actual_value") @db.Decimal(24, 8)
+  accuracyScore   Decimal?            @map("accuracy_score") @db.Decimal(5, 4)
+  observedAt      DateTime            @map("observed_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+
+  forecast Forecast @relation(fields: [forecastId], references: [id], onDelete: Restrict)
+
+  @@index([observedAt])
+  @@map("forecast_outcomes")
 }

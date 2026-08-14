@@ -11,6 +11,8 @@ packages/*/dist/
 .env.local
 .env.*.local
 
+/src/generated/prisma/
+
 # Logs
 *.log
 npm-debug.log*
