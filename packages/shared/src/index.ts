@@ -16,3 +16,23 @@ export interface ApiErrorResponse {
 }
 
 export type ApiResponse<TData> = ApiSuccessResponse<TData> | ApiErrorResponse;
+
+export {
+  ForecastStatus,
+  ForecastType,
+  MetricType,
+  PredictionDirection,
+  RiskLevel,
+} from "./domain/index.js";
+
+export type {
+  EntityId,
+  Forecast,
+  ForecastEntity,
+  ForecastExplanation,
+  ForecastFactor,
+  ForecastId,
+  ForecastResult,
+  Metric,
+  MetricId,
+} from "./domain/index.js";
