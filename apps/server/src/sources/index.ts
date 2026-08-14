@@ -9,3 +9,10 @@ export type {
   DataSourceResult,
   DataSourceSuccess,
 } from "./data-source.types.js";
+
+export { HuggingFaceDataSource } from "./hugging-face/index.js";
+
+export type {
+  HuggingFaceAdapterOptions,
+  HuggingFaceModelData,
+} from "./hugging-face/index.js";
