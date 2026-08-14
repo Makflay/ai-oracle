@@ -32,9 +32,6 @@ const environmentSchema = z.object({
 
   DATABASE_URL: z.url(),
 
-  MARKET_DATA_SOURCE_URL: httpUrlSchema,
-  NEWS_SOURCE_URL: httpUrlSchema,
-
   SOURCE_REQUEST_TIMEOUT_MS: z.coerce
     .number()
     .int()
