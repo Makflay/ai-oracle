@@ -10,6 +10,7 @@ import { prisma } from "./client.js";
 
 interface PreparedRawRecord {
   readonly sourceId: string;
+  readonly sourceKey: string;
   readonly entityId: string;
   readonly checksum: string;
   readonly observedAt: Date;
@@ -25,6 +26,7 @@ export class PrismaRawRecordRepository implements RawIngestionPersistence {
         receivedCount: 0,
         createdCount: 0,
         duplicateCount: 0,
+        records: [],
       };
     }
 
@@ -35,10 +37,40 @@ export class PrismaRawRecordRepository implements RawIngestionPersistence {
       skipDuplicates: true,
     });
 
+    const persistedRecords = await prisma.rawRecord.findMany({
+      where: {
+        OR: preparedRecords.map((record) => ({
+          sourceId: record.sourceId,
+          checksum: record.checksum,
+        })),
+      },
+      include: {
+        source: {
+          select: {
+            key: true,
+          },
+        },
+      },
+    });
+
     return {
       receivedCount: records.length,
       createdCount: result.count,
       duplicateCount: records.length - result.count,
+
+      records: persistedRecords.map((record) => {
+        if (!record.entityId) {
+          throw new Error(`RawRecord "${record.id}" has no entityId`);
+        }
+
+        return {
+          id: record.id,
+          sourceKey: record.source.key,
+          entityId: record.entityId,
+          payload: record.payload,
+          recordedAt: record.observedAt,
+        };
+      }),
     };
   }
 
@@ -109,6 +141,7 @@ export class PrismaRawRecordRepository implements RawIngestionPersistence {
 
       return {
         sourceId: source.id,
+        sourceKey: record.source,
         entityId,
         observedAt,
         checksum: this.createChecksum(record.entity, canonicalPayload),

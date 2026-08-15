@@ -15,4 +15,5 @@ export type { PersistedRawIngestionResult } from "./raw-ingestion.orchestrator.j
 export type {
   RawIngestionPersistence,
   RawPersistenceResult,
+  PersistedRawRecord,
 } from "./raw-ingestion.persistence.js";

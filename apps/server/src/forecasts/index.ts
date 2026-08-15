@@ -56,3 +56,14 @@ export {
   CurrentForecastService,
   ForecastHistoryService,
 } from "./queries/index.js";
+
+export type {
+  ForecastStrategyRegistry,
+  RefreshForecastInput,
+  RefreshForecastResult,
+} from "./refresh/index.js";
+
+export {
+  createForecastStrategyRegistry,
+  RefreshForecastService,
+} from "./refresh/index.js";

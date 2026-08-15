@@ -9,10 +9,22 @@ export interface MetricPersistenceRecord {
   readonly recordedAt: Date;
 }
 
+export interface PersistedMetricRecord {
+  readonly id: string;
+  readonly rawRecordId: string;
+  readonly entityId: string;
+  readonly sourceKey: string;
+  readonly metricType: MetricType;
+  readonly value: number;
+  readonly normalizedValue: number;
+  readonly recordedAt: Date;
+}
+
 export interface MetricPersistenceResult {
   readonly receivedCount: number;
   readonly createdCount: number;
   readonly duplicateCount: number;
+  readonly records: readonly PersistedMetricRecord[];
 }
 
 export interface MetricPersistence {

@@ -1,4 +1,4 @@
-import type { CurrentForecast } from "./current-forecast.types.js";
+import type { ForecastSnapshot } from "./current-forecast.types.js";
 
 import type {
   CurrentForecastRepository,
@@ -10,7 +10,7 @@ export class CurrentForecastService {
 
   async getCurrent(
     input: FindCurrentForecastInput,
-  ): Promise<CurrentForecast | null> {
+  ): Promise<ForecastSnapshot | null> {
     if (input.entityId.trim().length === 0) {
       throw new Error("Current forecast entityId is required");
     }

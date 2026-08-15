@@ -17,6 +17,7 @@ export class PrismaMetricRepository implements MetricPersistence {
         receivedCount: 0,
         createdCount: 0,
         duplicateCount: 0,
+        records: [],
       };
     }
 
@@ -32,10 +33,46 @@ export class PrismaMetricRepository implements MetricPersistence {
       skipDuplicates: true,
     });
 
+    const persistedMetrics = await prisma.metric.findMany({
+      where: {
+        OR: records.map((record) => ({
+          rawRecordId: record.rawRecordId,
+          type: this.toPrismaMetricType(record.metricType),
+        })),
+      },
+      include: {
+        rawRecord: {
+          include: {
+            source: {
+              select: {
+                key: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
     return {
       receivedCount: records.length,
       createdCount: result.count,
       duplicateCount: records.length - result.count,
+      records: persistedMetrics.map((metric) => {
+        if (!metric.rawRecordId || !metric.rawRecord) {
+          throw new Error(`Metric "${metric.id}" has no RawRecord`);
+        }
+
+        return {
+          id: metric.id,
+          rawRecordId: metric.rawRecordId,
+          entityId: metric.entityId,
+          sourceKey: metric.rawRecord.source.key,
+          metricType: this.toDomainMetricType(metric.type),
+          value: metric.value.toNumber(),
+          normalizedValue: metric.normalizedValue.toNumber(),
+          recordedAt: metric.observedAt,
+        };
+      }),
     };
   }
 
@@ -64,6 +101,34 @@ export class PrismaMetricRepository implements MetricPersistence {
 
       default:
         throw new Error(`Unsupported metric type "${metricType}"`);
+    }
+  }
+
+  private toDomainMetricType(metricType: PrismaMetricType): DomainMetricType {
+    switch (metricType) {
+      case PrismaMetricType.DOWNLOADS:
+        return DomainMetricType.Downloads;
+
+      case PrismaMetricType.LIKES:
+        return DomainMetricType.Likes;
+
+      case PrismaMetricType.MENTIONS:
+        return DomainMetricType.Mentions;
+
+      case PrismaMetricType.SCORE:
+        return DomainMetricType.Score;
+
+      case PrismaMetricType.COMMENTS:
+        return DomainMetricType.Comments;
+
+      case PrismaMetricType.ENGAGEMENT:
+        return DomainMetricType.Engagement;
+
+      case PrismaMetricType.PUBLICATIONS:
+        return DomainMetricType.Publications;
+
+      default:
+        throw new Error(`Unsupported Prisma metric type "${metricType}"`);
     }
   }
 }

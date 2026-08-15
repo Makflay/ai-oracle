@@ -33,7 +33,7 @@ export interface CurrentForecastOutcome {
   createdAt: Date;
 }
 
-export interface CurrentForecast {
+export interface ForecastSnapshot {
   id: string;
   entityId: string;
   forecastType: ForecastType;

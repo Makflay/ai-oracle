@@ -29,4 +29,5 @@ export type {
   MetricPersistence,
   MetricPersistenceRecord,
   MetricPersistenceResult,
+  PersistedMetricRecord,
 } from "./persistence/index.js";
