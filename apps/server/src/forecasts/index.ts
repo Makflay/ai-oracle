@@ -45,9 +45,14 @@ export type {
 export type {
   CurrentForecastRepository,
   FindCurrentForecastInput,
-  CurrentForecast,
+  ForecastSnapshot,
   CurrentForecastFactor,
   CurrentForecastOutcome,
+  FindForecastHistoryInput,
+  ForecastHistoryRepository,
 } from "./queries/index.js";
 
-export { CurrentForecastService } from "./queries/index.js";
+export {
+  CurrentForecastService,
+  ForecastHistoryService,
+} from "./queries/index.js";

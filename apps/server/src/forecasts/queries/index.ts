@@ -6,7 +6,14 @@ export type {
 } from "./current-forecast.repository.js";
 
 export type {
-  CurrentForecast,
+  ForecastSnapshot,
   CurrentForecastFactor,
   CurrentForecastOutcome,
 } from "./current-forecast.types.js";
+
+export { ForecastHistoryService } from "./forecast-history.service.js";
+
+export type {
+  FindForecastHistoryInput,
+  ForecastHistoryRepository,
+} from "./forecast-history.repository.js";
