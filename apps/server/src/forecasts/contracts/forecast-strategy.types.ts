@@ -36,6 +36,7 @@ export interface ForecastStrategyFactor {
 export interface ForecastStrategyResult<TPrediction extends string = string> {
   readonly score: number;
   readonly prediction: TPrediction;
+  readonly confidence: number;
   readonly factors: readonly ForecastStrategyFactor[];
   readonly summary: string;
 }

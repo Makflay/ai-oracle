@@ -6,6 +6,7 @@ import {
 import {
   createWeightedForecastFactors,
   determineProjectPopularityPrediction,
+  calculateForecastConfidence,
 } from "../calculations/index.js";
 
 import type {
@@ -84,10 +85,17 @@ export class ProjectPopularityStrategy implements ForecastStrategy<ProjectPopula
     );
 
     const prediction = determineProjectPopularityPrediction(score);
+    const confidence = calculateForecastConfidence({
+      metrics: latestMetrics,
+      asOf: input.asOf,
+      expectedSignalCount: 8,
+      expectedSourceCount: 3,
+    });
 
     return {
       score,
       prediction,
+      confidence: confidence.value,
       factors,
       summary:
         `Project popularity score is ${this.clampScore(score)}/100 ` +

@@ -11,3 +11,15 @@ export {
   determineDeveloperInterestPrediction,
   determineProjectPopularityPrediction,
 } from "./prediction.js";
+
+export {
+  CONFIDENCE_COMPONENT_WEIGHTS,
+  FRESHNESS_THRESHOLDS,
+  InvalidForecastConfidenceInputError,
+  calculateForecastConfidence,
+} from "./confidence.js";
+
+export type {
+  ForecastConfidenceInput,
+  ForecastConfidenceResult,
+} from "./confidence.js";

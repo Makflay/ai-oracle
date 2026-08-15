@@ -6,6 +6,7 @@ import {
 import {
   createWeightedForecastFactors,
   determineDeveloperInterestPrediction,
+  calculateForecastConfidence,
 } from "../calculations/index.js";
 
 import type {
@@ -84,10 +85,17 @@ export class DeveloperInterestStrategy implements ForecastStrategy<DeveloperInte
     );
 
     const prediction = determineDeveloperInterestPrediction(index);
+    const confidence = calculateForecastConfidence({
+      metrics: latestMetrics,
+      asOf: input.asOf,
+      expectedSignalCount: 8,
+      expectedSourceCount: 3,
+    });
 
     return {
       score: index,
       prediction,
+      confidence: confidence.value,
       factors,
       summary:
         `Global AI developer interest index is ${index}/100 ` +
