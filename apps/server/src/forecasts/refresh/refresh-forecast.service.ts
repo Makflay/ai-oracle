@@ -18,11 +18,13 @@ import type {
   RefreshForecastResult,
 } from "./refresh-forecast.types.js";
 
-const FORECAST_HORIZON_DAYS = 14;
-const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1_000;
+import { FORECAST_REFRESH_COOLDOWN_MS } from "./refresh-forecast.constants.js";
+
+import type { ForecastEntityRepository } from "./forecast-entity.repository.js";
 
 export class RefreshForecastService {
   constructor(
+    private readonly entities: ForecastEntityRepository,
     private readonly ingestion: RawIngestionOrchestrator,
     private readonly metrics: MetricProcessingService,
     private readonly strategies: ForecastStrategyRegistry,
@@ -44,10 +46,72 @@ export class RefreshForecastService {
       throw new Error("refreshForecast strategyKey is required");
     }
 
-    const strategy = this.strategies.get(strategyKey);
+    const entity = await this.entities.findBySlug(entitySlug);
+
+    if (!entity) {
+      throw new Error(`Entity "${entitySlug}" was not found`);
+    }
+
+    const executionKey = [entity.id, input.forecastType].join(":");
+
+    const inFlight = this.inFlightByForecast.get(executionKey);
+
+    if (inFlight) {
+      return inFlight;
+    }
+
+    const execution = this.executeRefresh(input, entity.id, entity.slug);
+
+    this.inFlightByForecast.set(executionKey, execution);
+
+    try {
+      return await execution;
+    } finally {
+      if (this.inFlightByForecast.get(executionKey) === execution) {
+        this.inFlightByForecast.delete(executionKey);
+      }
+    }
+  }
+
+  private readonly inFlightByForecast = new Map<
+    string,
+    Promise<RefreshForecastResult>
+  >();
+
+  private async executeRefresh(
+    input: RefreshForecastInput,
+    entityId: string,
+    entitySlug: string,
+  ): Promise<RefreshForecastResult> {
+    const current = await this.currentForecast.getCurrent({
+      entityId,
+      forecastType: input.forecastType,
+    });
+
+    const checkedAt = new Date();
+
+    if (
+      current &&
+      checkedAt.getTime() <
+        current.createdAt.getTime() + FORECAST_REFRESH_COOLDOWN_MS
+    ) {
+      return {
+        forecast: current,
+        refreshed: false,
+        ingestionFailures: [],
+        createdRawRecordCount: 0,
+        duplicateRawRecordCount: 0,
+        createdMetricCount: 0,
+        duplicateMetricCount: 0,
+      };
+    }
+
+    const strategy = this.strategies.get(input.strategyKey);
 
     if (!strategy) {
-      throw new Error(`Forecast strategy "${strategyKey}" is not configured`);
+      throw new Error(
+        `Forecast strategy "${input.strategyKey}" is not configured`,
+      );
     }
 
     const ingestionResult = await this.ingestion.ingest(
@@ -59,18 +123,12 @@ export class RefreshForecastService {
       throw new Error(`No raw records available for entity "${entitySlug}"`);
     }
 
-    const entityIds = new Set(
-      ingestionResult.persistence.records.map((record) => record.entityId),
+    const containsUnexpectedEntity = ingestionResult.persistence.records.some(
+      (record) => record.entityId !== entityId,
     );
 
-    if (entityIds.size !== 1) {
-      throw new Error(`Ingestion returned records for multiple entities`);
-    }
-
-    const [entityId] = entityIds;
-
-    if (!entityId) {
-      throw new Error(`Entity "${entitySlug}" was not resolved`);
+    if (containsUnexpectedEntity) {
+      throw new Error("Ingestion returned records for an unexpected entity");
     }
 
     const metricSourceRecords: readonly MetricSourceRecord[] =
@@ -89,9 +147,8 @@ export class RefreshForecastService {
     }
 
     const asOf = new Date();
-    const targetAt = new Date(
-      asOf.getTime() + FORECAST_HORIZON_DAYS * MILLISECONDS_PER_DAY,
-    );
+
+    const targetAt = new Date(asOf.getTime() + 14 * 24 * 60 * 60 * 1_000);
 
     const forecastMetrics: readonly ForecastMetricInput[] =
       metricResult.records.map((metric) => ({
@@ -116,24 +173,25 @@ export class RefreshForecastService {
     await this.forecastPersistence.save({
       entityId,
       forecastType: input.forecastType,
-      targetAt: targetAt.toISOString(),
+      targetAt: strategyInput.targetAt,
       result: forecastResult,
       createdAt: asOf,
     });
 
-    const current = await this.currentForecast.getCurrent({
+    const refreshedForecast = await this.currentForecast.getCurrent({
       entityId,
       forecastType: input.forecastType,
     });
 
-    if (!current) {
+    if (!refreshedForecast) {
       throw new Error(
         "Forecast was persisted but current forecast could not be loaded",
       );
     }
 
     return {
-      forecast: current,
+      forecast: refreshedForecast,
+      refreshed: true,
       ingestionFailures: ingestionResult.failures,
       createdRawRecordCount: ingestionResult.persistence.createdCount,
       duplicateRawRecordCount: ingestionResult.persistence.duplicateCount,

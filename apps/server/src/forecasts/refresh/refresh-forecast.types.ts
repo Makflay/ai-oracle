@@ -21,4 +21,5 @@ export interface RefreshForecastResult {
   duplicateRawRecordCount: number;
   createdMetricCount: number;
   duplicateMetricCount: number;
+  readonly refreshed: boolean;
 }
