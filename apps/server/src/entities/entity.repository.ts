@@ -4,6 +4,8 @@ import { prisma } from "../db/client.js";
 
 export interface EntityRepository {
   findAll(): Promise<readonly ForecastEntity[]>;
+
+  findById(id: string): Promise<ForecastEntity | null>;
 }
 
 export class PrismaEntityRepository implements EntityRepository {
@@ -24,6 +26,21 @@ export class PrismaEntityRepository implements EntityRepository {
           slug: "asc",
         },
       ],
+    });
+  }
+
+  async findById(id: string): Promise<ForecastEntity | null> {
+    return prisma.entity.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        symbol: true,
+        description: true,
+      },
     });
   }
 }

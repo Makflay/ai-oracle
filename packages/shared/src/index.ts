@@ -8,14 +8,17 @@ export interface ApiSuccessResponse<TData> {
   data: TData;
 }
 
-export interface ApiErrorResponse {
+export interface ApiErrorResponse<TCode extends string = string> {
   status: ApiStatus.Error;
   error: {
+    code: TCode;
     message: string;
   };
 }
 
-export type ApiResponse<TData> = ApiSuccessResponse<TData> | ApiErrorResponse;
+export type ApiResponse<TData, TCode extends string = string> =
+  | ApiSuccessResponse<TData>
+  | ApiErrorResponse<TCode>;
 
 export {
   ForecastStatus,
@@ -38,3 +41,13 @@ export type {
   Metric,
   MetricId,
 } from "./domain/index.js";
+
+export { ProjectForecastApiErrorCode } from "./api/index.js";
+
+export type {
+  ProjectForecastDto,
+  ProjectForecastFactorDto,
+  ProjectForecastOutcomeDto,
+  ProjectForecastRefreshDto,
+  ProjectForecastRiskReasonDto,
+} from "./api/index.js";

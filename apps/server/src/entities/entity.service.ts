@@ -8,4 +8,8 @@ export class EntityService {
   async getEntities(): Promise<readonly ForecastEntity[]> {
     return this.repository.findAll();
   }
+
+  async getEntityById(id: string): Promise<ForecastEntity | null> {
+    return this.repository.findById(id);
+  }
 }

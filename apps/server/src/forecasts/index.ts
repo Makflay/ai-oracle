@@ -67,3 +67,11 @@ export {
   createForecastStrategyRegistry,
   RefreshForecastService,
 } from "./refresh/index.js";
+
+export type { ProjectForecastControllerDependencies } from "./api/index.js";
+
+export {
+  ProjectForecastController,
+  createProjectForecastRouter,
+  toProjectForecastDto,
+} from "./api/index.js";
