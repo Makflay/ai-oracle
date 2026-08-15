@@ -1,9 +1,22 @@
-export { ArxivMetricExtractor } from "./arxiv-metric.extractor.js";
+export {
+  ArxivMetricExtractor,
+  HackerNewsMetricExtractor,
+  HuggingFaceMetricExtractor,
+  InvalidMetricPayloadError,
+} from "./extractors/index.js";
 
-export { HackerNewsMetricExtractor } from "./hacker-news-metric.extractor.js";
+export type { ExtractedMetric, MetricExtractor } from "./extractors/index.js";
 
-export { HuggingFaceMetricExtractor } from "./hugging-face-metric.extractor.js";
+export {
+  InvalidRawMetricValueError,
+  UnsupportedMetricNormalizationError,
+  metricNormalizationRules,
+  normalizeMetric,
+  normalizeMetrics,
+} from "./normalization/index.js";
 
-export { InvalidMetricPayloadError } from "./metric-extractor.js";
-
-export type { ExtractedMetric, MetricExtractor } from "./metric-extractor.js";
+export type {
+  MetricNormalizationRule,
+  NormalizationThreshold,
+  NormalizedMetric,
+} from "./normalization/index.js";
