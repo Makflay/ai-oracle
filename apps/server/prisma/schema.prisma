@@ -46,6 +46,13 @@ enum MetricType {
   VOLATILITY @map("volatility")
   MOMENTUM   @map("momentum")
   SENTIMENT  @map("sentiment")
+  DOWNLOADS    @map("downloads")
+  LIKES        @map("likes")
+  MENTIONS     @map("mentions")
+  SCORE        @map("score")
+  COMMENTS     @map("comments")
+  ENGAGEMENT   @map("engagement")
+  PUBLICATIONS @map("publications")
 
   @@map("metric_type")
 }

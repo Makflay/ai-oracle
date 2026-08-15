@@ -29,4 +29,12 @@ export enum MetricType {
   Volatility = "volatility",
   Momentum = "momentum",
   Sentiment = "sentiment",
+
+  Downloads = "downloads",
+  Likes = "likes",
+  Mentions = "mentions",
+  Score = "score",
+  Comments = "comments",
+  Engagement = "engagement",
+  Publications = "publications",
 }
