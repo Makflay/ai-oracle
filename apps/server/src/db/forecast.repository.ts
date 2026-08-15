@@ -20,6 +20,9 @@ import type {
   ForecastExplainabilityMetadata,
   ForecastPersistence,
   StoredForecastSnapshot,
+  CurrentForecast,
+  CurrentForecastRepository,
+  FindCurrentForecastInput,
 } from "../forecasts/index.ts";
 
 const toPrismaForecastType = (type: ForecastType): PrismaForecastType => {
@@ -184,7 +187,9 @@ const toDomainPredictionDirection = (
   }
 };
 
-export class PrismaForecastRepository implements ForecastPersistence {
+export class PrismaForecastRepository
+  implements ForecastPersistence, CurrentForecastRepository
+{
   async create(
     snapshot: CreateForecastSnapshot,
   ): Promise<StoredForecastSnapshot> {
@@ -257,6 +262,82 @@ export class PrismaForecastRepository implements ForecastPersistence {
         position: factor.position,
         createdAt: factor.createdAt,
       })),
+    };
+  }
+
+  async findCurrent(
+    input: FindCurrentForecastInput,
+  ): Promise<CurrentForecast | null> {
+    const forecast = await prisma.forecast.findFirst({
+      where: {
+        entityId: input.entityId,
+        forecastType: toPrismaForecastType(input.forecastType),
+      },
+      orderBy: [
+        {
+          createdAt: "desc",
+        },
+        {
+          id: "desc",
+        },
+      ],
+      include: {
+        factors: {
+          orderBy: {
+            position: "asc",
+          },
+        },
+        outcome: true,
+      },
+    });
+
+    if (!forecast) {
+      return null;
+    }
+
+    return {
+      id: forecast.id,
+      entityId: forecast.entityId,
+      forecastType: toDomainForecastType(forecast.forecastType),
+      score: forecast.score.toNumber(),
+      confidence: forecast.confidence?.toNumber() ?? null,
+      risk: toDomainRiskLevel(forecast.risk),
+      prediction: forecast.prediction,
+      predictedValue: forecast.predictedValue?.toNumber() ?? null,
+      targetAt: forecast.targetAt,
+      createdAt: forecast.createdAt,
+      explainability:
+        forecast.explainability as unknown as ForecastExplainabilityMetadata,
+      factors: forecast.factors.map((factor) => ({
+        id: factor.id,
+        forecastId: factor.forecastId,
+        metricId: factor.metricId,
+        sourceKey: factor.sourceKey,
+        metricType: toDomainMetricType(factor.metricType),
+        rawValue: factor.rawValue.toNumber(),
+        normalizedValue: factor.normalizedValue.toNumber(),
+        weight: factor.weight.toNumber(),
+        contribution: factor.contribution.toNumber(),
+        direction: factor.direction
+          ? toDomainPredictionDirection(factor.direction)
+          : null,
+        description: factor.description,
+        position: factor.position,
+        createdAt: factor.createdAt,
+      })),
+      outcome: forecast.outcome
+        ? {
+            id: forecast.outcome.id,
+            forecastId: forecast.outcome.forecastId,
+            actualDirection: toDomainPredictionDirection(
+              forecast.outcome.actualDirection,
+            ),
+            actualValue: forecast.outcome.actualValue?.toNumber() ?? null,
+            accuracyScore: forecast.outcome.accuracyScore?.toNumber() ?? null,
+            observedAt: forecast.outcome.observedAt,
+            createdAt: forecast.outcome.createdAt,
+          }
+        : null,
     };
   }
 }

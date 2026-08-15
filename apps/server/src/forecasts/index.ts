@@ -41,3 +41,13 @@ export type {
   StoredForecastSnapshot,
   ForecastPersistence,
 } from "./persistence/index.ts";
+
+export type {
+  CurrentForecastRepository,
+  FindCurrentForecastInput,
+  CurrentForecast,
+  CurrentForecastFactor,
+  CurrentForecastOutcome,
+} from "./queries/index.js";
+
+export { CurrentForecastService } from "./queries/index.js";
