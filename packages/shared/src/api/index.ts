@@ -7,3 +7,10 @@ export type {
   ProjectForecastRefreshDto,
   ProjectForecastRiskReasonDto,
 } from "./project-forecast.js";
+
+export { DeveloperInterestApiErrorCode } from "./developer-interest-forecast.js";
+
+export type {
+  DeveloperInterestForecastDto,
+  DeveloperInterestRefreshDto,
+} from "./developer-interest-forecast.js";

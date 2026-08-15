@@ -42,7 +42,10 @@ export type {
   MetricId,
 } from "./domain/index.js";
 
-export { ProjectForecastApiErrorCode } from "./api/index.js";
+export {
+  ProjectForecastApiErrorCode,
+  DeveloperInterestApiErrorCode,
+} from "./api/index.js";
 
 export type {
   ProjectForecastDto,
@@ -50,4 +53,6 @@ export type {
   ProjectForecastOutcomeDto,
   ProjectForecastRefreshDto,
   ProjectForecastRiskReasonDto,
+  DeveloperInterestForecastDto,
+  DeveloperInterestRefreshDto,
 } from "./api/index.js";

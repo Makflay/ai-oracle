@@ -12,4 +12,8 @@ export class EntityService {
   async getEntityById(id: string): Promise<ForecastEntity | null> {
     return this.repository.findById(id);
   }
+
+  async getEntityBySlug(slug: string): Promise<ForecastEntity | null> {
+    return this.repository.findBySlug(slug);
+  }
 }

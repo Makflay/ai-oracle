@@ -68,10 +68,16 @@ export {
   RefreshForecastService,
 } from "./refresh/index.js";
 
-export type { ProjectForecastControllerDependencies } from "./api/index.js";
+export type {
+  ProjectForecastControllerDependencies,
+  DeveloperInterestControllerDependencies,
+} from "./api/index.js";
 
 export {
   ProjectForecastController,
   createProjectForecastRouter,
   toProjectForecastDto,
+  DeveloperInterestController,
+  createDeveloperInterestRouter,
+  toDeveloperInterestForecastDto,
 } from "./api/index.js";
