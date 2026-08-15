@@ -11,9 +11,9 @@ export enum PredictionDirection {
 }
 
 export enum RiskLevel {
-  Low = "low",
-  Medium = "medium",
-  High = "high",
+  Low = "LOW",
+  Medium = "MEDIUM",
+  High = "HIGH",
 }
 
 export enum ForecastStatus {

@@ -23,3 +23,11 @@ export type {
   ForecastConfidenceInput,
   ForecastConfidenceResult,
 } from "./confidence.js";
+
+export { calculateForecastRisk } from "./risk.js";
+
+export type {
+  ForecastRiskInput,
+  ForecastRiskComponents,
+  ForecastRiskResult,
+} from "./risk.types.js";

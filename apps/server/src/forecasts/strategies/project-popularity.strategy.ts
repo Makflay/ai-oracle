@@ -7,6 +7,7 @@ import {
   createWeightedForecastFactors,
   determineProjectPopularityPrediction,
   calculateForecastConfidence,
+  calculateForecastRisk,
 } from "../calculations/index.js";
 
 import type {
@@ -91,11 +92,18 @@ export class ProjectPopularityStrategy implements ForecastStrategy<ProjectPopula
       expectedSignalCount: 8,
       expectedSourceCount: 3,
     });
+    const risk = calculateForecastRisk({
+      confidence: confidence.value,
+      sourceConsistency: confidence.sourceConsistency,
+      freshness: confidence.freshness,
+      signalCoverage: confidence.signalCoverage,
+    });
 
     return {
       score,
       prediction,
       confidence: confidence.value,
+      risk: risk.level,
       factors,
       summary:
         `Project popularity score is ${this.clampScore(score)}/100 ` +
