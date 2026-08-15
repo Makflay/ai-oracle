@@ -1,5 +1,12 @@
-import { ForecastType, MetricType } from "@ai-oracle/shared";
-import { createWeightedForecastFactors } from "../calculations/index.js";
+import {
+  ForecastType,
+  MetricType,
+  ProjectPopularityPrediction,
+} from "@ai-oracle/shared";
+import {
+  createWeightedForecastFactors,
+  determineProjectPopularityPrediction,
+} from "../calculations/index.js";
 
 import type {
   ForecastMetricInput,
@@ -56,12 +63,12 @@ export class InvalidForecastHorizonError extends Error {
   }
 }
 
-export class ProjectPopularityStrategy implements ForecastStrategy {
+export class ProjectPopularityStrategy implements ForecastStrategy<ProjectPopularityPrediction> {
   readonly key = "project_popularity";
 
   async forecast(
     input: ForecastStrategyInput,
-  ): Promise<ForecastStrategyResult> {
+  ): Promise<ForecastStrategyResult<ProjectPopularityPrediction>> {
     this.validateInput(input);
 
     const latestMetrics = this.selectLatestMetrics(input.metrics);
@@ -76,8 +83,11 @@ export class ProjectPopularityStrategy implements ForecastStrategy {
       factors.reduce((total, factor) => total + factor.contribution, 0),
     );
 
+    const prediction = determineProjectPopularityPrediction(score);
+
     return {
-      score: this.clampScore(score),
+      score,
+      prediction,
       factors,
       summary:
         `Project popularity score is ${this.clampScore(score)}/100 ` +

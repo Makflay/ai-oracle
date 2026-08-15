@@ -1,6 +1,5 @@
 export type {
   ForecastMetricInput,
-  ForecastPrediction,
   ForecastStrategy,
   ForecastStrategyFactor,
   ForecastStrategyInput,
@@ -17,7 +16,12 @@ export {
 } from "./strategies/index.js";
 
 export {
+  DEVELOPER_INTEREST_THRESHOLDS,
+  PROJECT_POPULARITY_THRESHOLDS,
   InvalidForecastFactorError,
   createWeightedForecastFactor,
   createWeightedForecastFactors,
+  InvalidForecastScoreError,
+  determineDeveloperInterestPrediction,
+  determineProjectPopularityPrediction,
 } from "./calculations/index.js";

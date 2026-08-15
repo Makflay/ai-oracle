@@ -2,7 +2,6 @@ import type {
   ForecastType,
   MetricType,
   PredictionDirection,
-  RiskLevel,
 } from "@ai-oracle/shared";
 
 export interface ForecastMetricInput {
@@ -22,12 +21,6 @@ export interface ForecastStrategyInput {
   readonly metrics: readonly ForecastMetricInput[];
 }
 
-export interface ForecastPrediction {
-  readonly direction: PredictionDirection;
-  readonly confidence: number;
-  readonly riskLevel: RiskLevel;
-}
-
 export interface ForecastStrategyFactor {
   readonly metricId: string;
   readonly sourceKey: string;
@@ -40,9 +33,9 @@ export interface ForecastStrategyFactor {
   readonly description: string;
 }
 
-export interface ForecastStrategyResult {
+export interface ForecastStrategyResult<TPrediction extends string = string> {
   readonly score: number;
-  readonly prediction?: ForecastPrediction;
+  readonly prediction: TPrediction;
   readonly factors: readonly ForecastStrategyFactor[];
   readonly summary: string;
 }

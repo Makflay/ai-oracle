@@ -23,6 +23,8 @@ export {
   MetricType,
   PredictionDirection,
   RiskLevel,
+  DeveloperInterestPrediction,
+  ProjectPopularityPrediction,
 } from "./domain/index.js";
 
 export type {

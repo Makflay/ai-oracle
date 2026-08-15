@@ -3,8 +3,10 @@ import type {
   ForecastStrategyResult,
 } from "./forecast-strategy.types.js";
 
-export interface ForecastStrategy {
+export interface ForecastStrategy<TPrediction extends string = string> {
   readonly key: string;
 
-  forecast(input: ForecastStrategyInput): Promise<ForecastStrategyResult>;
+  forecast(
+    input: ForecastStrategyInput,
+  ): Promise<ForecastStrategyResult<TPrediction>>;
 }

@@ -6,6 +6,8 @@ export {
   MetricType,
   PredictionDirection,
   RiskLevel,
+  DeveloperInterestPrediction,
+  ProjectPopularityPrediction,
 } from "./enums.js";
 
 export type {

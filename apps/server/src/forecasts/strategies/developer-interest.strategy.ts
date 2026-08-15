@@ -1,5 +1,12 @@
-import { ForecastType, MetricType } from "@ai-oracle/shared";
-import { createWeightedForecastFactors } from "../calculations/index.js";
+import {
+  ForecastType,
+  MetricType,
+  DeveloperInterestPrediction,
+} from "@ai-oracle/shared";
+import {
+  createWeightedForecastFactors,
+  determineDeveloperInterestPrediction,
+} from "../calculations/index.js";
 
 import type {
   ForecastMetricInput,
@@ -56,12 +63,12 @@ export class InvalidDeveloperInterestHorizonError extends Error {
   }
 }
 
-export class DeveloperInterestStrategy implements ForecastStrategy {
+export class DeveloperInterestStrategy implements ForecastStrategy<DeveloperInterestPrediction> {
   readonly key = "developer_interest";
 
   async forecast(
     input: ForecastStrategyInput,
-  ): Promise<ForecastStrategyResult> {
+  ): Promise<ForecastStrategyResult<DeveloperInterestPrediction>> {
     this.validateInput(input);
 
     const latestMetrics = this.selectLatestMetrics(input.metrics);
@@ -76,8 +83,11 @@ export class DeveloperInterestStrategy implements ForecastStrategy {
       factors.reduce((total, factor) => total + factor.contribution, 0),
     );
 
+    const prediction = determineDeveloperInterestPrediction(index);
+
     return {
       score: index,
+      prediction,
       factors,
       summary:
         `Global AI developer interest index is ${index}/100 ` +

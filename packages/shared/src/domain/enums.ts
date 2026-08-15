@@ -38,3 +38,17 @@ export enum MetricType {
   Engagement = "engagement",
   Publications = "publications",
 }
+
+export enum ProjectPopularityPrediction {
+  StrongRise = "STRONG_RISE",
+  Rise = "RISE",
+  Stable = "STABLE",
+  Decline = "DECLINE",
+  StrongDecline = "STRONG_DECLINE",
+}
+
+export enum DeveloperInterestPrediction {
+  High = "HIGH",
+  Medium = "MEDIUM",
+  Low = "LOW",
+}
