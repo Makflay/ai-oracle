@@ -15,3 +15,9 @@ export {
   InsufficientDeveloperInterestMetricsError,
   InvalidDeveloperInterestHorizonError,
 } from "./strategies/index.js";
+
+export {
+  InvalidForecastFactorError,
+  createWeightedForecastFactor,
+  createWeightedForecastFactors,
+} from "./calculations/index.js";

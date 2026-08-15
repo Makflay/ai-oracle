@@ -1,4 +1,5 @@
 import { ForecastType, MetricType } from "@ai-oracle/shared";
+import { createWeightedForecastFactors } from "../calculations/index.js";
 
 import type {
   ForecastMetricInput,
@@ -206,29 +207,9 @@ export class ProjectPopularityStrategy implements ForecastStrategy {
 
     for (const sourceKey of sourceKeys) {
       const metrics = metricsBySource.get(sourceKey) ?? [];
-
-      if (metrics.length === 0) {
-        continue;
-      }
-
-      const metricWeight = SOURCE_WEIGHTS[sourceKey] / metrics.length;
-
-      for (const metric of metrics) {
-        const contribution = this.round(metric.normalizedValue * metricWeight);
-
-        factors.push({
-          metricId: metric.metricId,
-          sourceKey,
-          metricType: metric.type,
-          rawValue: metric.rawValue,
-          normalizedValue: metric.normalizedValue,
-          weight: this.round(metricWeight),
-          contribution,
-          description:
-            `${sourceKey} ${metric.type} contributes ` +
-            `${contribution} points to project popularity.`,
-        });
-      }
+      factors.push(
+        ...createWeightedForecastFactors(metrics, SOURCE_WEIGHTS[sourceKey]),
+      );
     }
 
     return factors;
