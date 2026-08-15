@@ -11,4 +11,7 @@ export {
   InsufficientForecastMetricsError,
   InvalidForecastHorizonError,
   ProjectPopularityStrategy,
+  DeveloperInterestStrategy,
+  InsufficientDeveloperInterestMetricsError,
+  InvalidDeveloperInterestHorizonError,
 } from "./strategies/index.js";
