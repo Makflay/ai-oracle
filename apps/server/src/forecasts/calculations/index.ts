@@ -31,3 +31,7 @@ export type {
   ForecastRiskComponents,
   ForecastRiskResult,
 } from "./risk.types.js";
+
+export { createForecastRiskReason } from "./risk-reason.js";
+
+export type { ForecastRiskReason } from "./risk-reason.js";

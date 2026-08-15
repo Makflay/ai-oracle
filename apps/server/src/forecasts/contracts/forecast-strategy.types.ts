@@ -5,6 +5,8 @@ import type {
   RiskLevel,
 } from "@ai-oracle/shared";
 
+import type { ForecastRiskReason } from "../calculations/index.ts";
+
 export interface ForecastMetricInput {
   readonly metricId: string;
   readonly sourceKey: string;
@@ -39,6 +41,7 @@ export interface ForecastStrategyResult<TPrediction extends string = string> {
   readonly prediction: TPrediction;
   readonly confidence: number;
   readonly risk: RiskLevel;
+  readonly riskReason: ForecastRiskReason;
   readonly factors: readonly ForecastStrategyFactor[];
   readonly summary: string;
 }
