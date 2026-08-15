@@ -1,4 +1,9 @@
-import type { ForecastType, RiskLevel } from "@ai-oracle/shared";
+import type {
+  ForecastType,
+  RiskLevel,
+  MetricType,
+  PredictionDirection,
+} from "@ai-oracle/shared";
 
 import type { ForecastRiskReason } from "../calculations/index.js";
 
@@ -18,6 +23,20 @@ export interface CreateForecastSnapshot {
   targetAt: Date;
   createdAt: Date;
   explainability: ForecastExplainabilityMetadata;
+  factors: readonly CreateForecastFactorSnapshot[];
+}
+
+export interface CreateForecastFactorSnapshot {
+  metricId: string | null;
+  sourceKey: string;
+  metricType: MetricType;
+  rawValue: number;
+  normalizedValue: number;
+  weight: number;
+  contribution: number;
+  direction?: PredictionDirection | null;
+  description: string;
+  position: number;
 }
 
 export interface StoredForecastSnapshot {
@@ -32,6 +51,7 @@ export interface StoredForecastSnapshot {
   targetAt: Date;
   createdAt: Date;
   explainability: ForecastExplainabilityMetadata;
+  factors: readonly CreateForecastFactorSnapshot[];
 }
 
 export interface ForecastPersistence {

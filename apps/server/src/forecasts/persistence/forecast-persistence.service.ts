@@ -48,6 +48,18 @@ export class ForecastPersistenceService {
         summary: input.result.summary,
         riskReason: input.result.riskReason,
       },
+      factors: input.result.factors.map((factor, position) => ({
+        metricId: factor.metricId,
+        sourceKey: factor.sourceKey,
+        metricType: factor.metricType,
+        rawValue: factor.rawValue,
+        normalizedValue: factor.normalizedValue,
+        weight: factor.weight,
+        contribution: factor.contribution,
+        direction: factor.direction ?? null,
+        description: factor.description,
+        position,
+      })),
     });
   }
 }

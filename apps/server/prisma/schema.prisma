@@ -165,15 +165,19 @@ model Forecast {
 }
 
 model ForecastFactor {
-  id          String              @id @default(uuid()) @db.Uuid
-  forecastId  String              @map("forecast_id") @db.Uuid
-  metricId    String?             @map("metric_id") @db.Uuid
-  metricType  MetricType          @map("metric_type")
-  direction   PredictionDirection
-  weight      Decimal             @db.Decimal(7, 6)
-  description String
-  position    Int
-  createdAt   DateTime            @default(now()) @map("created_at")
+  id              String                @id @default(uuid()) @db.Uuid
+  forecastId      String                @map("forecast_id") @db.Uuid
+  metricId        String?               @map("metric_id") @db.Uuid
+  sourceKey       String                @map("source_key")
+  metricType      MetricType            @map("metric_type")
+  rawValue        Decimal               @map("raw_value") @db.Decimal(24, 8)
+  normalizedValue Decimal               @map("normalized_value") @db.Decimal(5, 2)
+  contribution    Decimal               @db.Decimal(7, 4)
+  direction       PredictionDirection?
+  weight          Decimal               @db.Decimal(7, 6)
+  description     String
+  position        Int
+  createdAt       DateTime              @default(now()) @map("created_at")
 
   forecast Forecast @relation(fields: [forecastId], references: [id], onDelete: Restrict)
   metric   Metric?  @relation(fields: [metricId], references: [id], onDelete: Restrict)
@@ -181,6 +185,7 @@ model ForecastFactor {
   @@unique([forecastId, position])
   @@index([forecastId])
   @@index([metricId])
+  @@index([sourceKey, metricType])
   @@map("forecast_factors")
 }
 
