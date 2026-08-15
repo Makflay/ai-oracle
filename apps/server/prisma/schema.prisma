@@ -117,6 +117,7 @@ model Metric {
   rawRecordId String?    @map("raw_record_id") @db.Uuid
   type        MetricType
   value       Decimal    @db.Decimal(24, 8)
+  normalizedValue Decimal    @map("normalized_value") @db.Decimal(5, 2)
   unit        String?
   observedAt  DateTime   @map("observed_at")
   calculatedAt DateTime  @default(now()) @map("calculated_at")
@@ -125,6 +126,7 @@ model Metric {
   rawRecord RawRecord? @relation(fields: [rawRecordId], references: [id], onDelete: Restrict)
   factors   ForecastFactor[]
 
+  @@unique([rawRecordId, type])
   @@index([entityId, type, observedAt(sort: Desc)])
   @@index([rawRecordId])
   @@index([calculatedAt])

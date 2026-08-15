@@ -1,0 +1,22 @@
+import type { MetricType } from "@ai-oracle/shared";
+
+export interface MetricPersistenceRecord {
+  readonly rawRecordId: string;
+  readonly entityId: string;
+  readonly metricType: MetricType;
+  readonly value: number;
+  readonly normalizedValue: number;
+  readonly recordedAt: Date;
+}
+
+export interface MetricPersistenceResult {
+  readonly receivedCount: number;
+  readonly createdCount: number;
+  readonly duplicateCount: number;
+}
+
+export interface MetricPersistence {
+  save(
+    records: readonly MetricPersistenceRecord[],
+  ): Promise<MetricPersistenceResult>;
+}

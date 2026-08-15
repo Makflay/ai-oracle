@@ -8,6 +8,7 @@ export interface Metric {
   entityId: EntityId;
   type: MetricType;
   value: number;
+  normalizedValue: number;
   unit?: string;
   observedAt: string;
 }

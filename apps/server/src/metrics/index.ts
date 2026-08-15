@@ -20,3 +20,13 @@ export type {
   NormalizationThreshold,
   NormalizedMetric,
 } from "./normalization/index.js";
+
+export { MetricProcessingService } from "./metric-processing.service.js";
+
+export type { MetricSourceRecord } from "./metric-processing.types.js";
+
+export type {
+  MetricPersistence,
+  MetricPersistenceRecord,
+  MetricPersistenceResult,
+} from "./persistence/index.js";
