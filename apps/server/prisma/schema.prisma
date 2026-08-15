@@ -136,16 +136,20 @@ model Metric {
 model Forecast {
   id             String               @id @default(uuid()) @db.Uuid
   entityId       String               @map("entity_id") @db.Uuid
-  type           ForecastType
+  forecastType   ForecastType
+  score          Decimal              @db.Decimal(5, 2)
   status         ForecastStatus       @default(PENDING)
   direction      PredictionDirection?
   riskLevel      RiskLevel?           @map("risk_level")
   confidence     Decimal?             @db.Decimal(5, 4)
+  risk           RiskLevel
+  prediction     String
   predictedValue Decimal?             @map("predicted_value") @db.Decimal(24, 8)
   summary        String?
   failureReason  String?              @map("failure_reason")
   modelVersion   String?              @map("model_version")
-  targetAt       DateTime             @map("target_at")
+  explainability Json                 @db.JsonB
+  targetAt       DateTime             @map("target_at") @db.Timestamptz(3)
   createdAt      DateTime             @default(now()) @map("created_at")
   completedAt    DateTime?            @map("completed_at")
 
@@ -153,7 +157,7 @@ model Forecast {
   factors ForecastFactor[]
   outcome ForecastOutcome?
 
-  @@index([entityId, type, createdAt(sort: Desc)])
+  @@index([entityId, forecastType, createdAt(sort: Desc)])
   @@index([entityId, targetAt])
   @@index([status, createdAt])
   @@index([targetAt])

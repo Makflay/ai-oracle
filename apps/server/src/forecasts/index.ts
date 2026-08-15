@@ -34,3 +34,10 @@ export {
   InvalidForecastConfidenceInputError,
   calculateForecastConfidence,
 } from "./calculations/index.js";
+
+export type {
+  ForecastExplainabilityMetadata,
+  CreateForecastSnapshot,
+  StoredForecastSnapshot,
+  ForecastPersistence,
+} from "./persistence/index.ts";
