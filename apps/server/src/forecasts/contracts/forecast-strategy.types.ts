@@ -7,6 +7,7 @@ import type {
 
 export interface ForecastMetricInput {
   readonly metricId: string;
+  readonly sourceKey: string;
   readonly type: MetricType;
   readonly rawValue: number;
   readonly normalizedValue: number;
@@ -29,18 +30,19 @@ export interface ForecastPrediction {
 
 export interface ForecastStrategyFactor {
   readonly metricId: string;
+  readonly sourceKey: string;
   readonly metricType: MetricType;
   readonly rawValue: number;
   readonly normalizedValue: number;
   readonly weight: number;
   readonly contribution: number;
-  readonly direction: PredictionDirection;
+  readonly direction?: PredictionDirection;
   readonly description: string;
 }
 
 export interface ForecastStrategyResult {
   readonly score: number;
-  readonly prediction: ForecastPrediction;
+  readonly prediction?: ForecastPrediction;
   readonly factors: readonly ForecastStrategyFactor[];
   readonly summary: string;
 }
