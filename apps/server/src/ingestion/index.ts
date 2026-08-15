@@ -7,3 +7,12 @@ export type {
   RawIngestionRecord,
   RawIngestionResult,
 } from "./raw-ingestion.types.js";
+
+export { RawIngestionOrchestrator } from "./raw-ingestion.orchestrator.js";
+
+export type { PersistedRawIngestionResult } from "./raw-ingestion.orchestrator.js";
+
+export type {
+  RawIngestionPersistence,
+  RawPersistenceResult,
+} from "./raw-ingestion.persistence.js";
