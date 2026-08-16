@@ -3,6 +3,7 @@ import {
   ForecastHistoryApiErrorCode,
   ForecastStatus,
   ForecastType,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 import type {
@@ -24,6 +25,7 @@ const historyQuerySchema = z.object({
   entityId: z.uuid().optional(),
   forecastType: z.enum(ForecastType).optional(),
   status: z.enum(ForecastStatus).optional(),
+  forecastKind: z.enum(ForecastKind).optional(),
 });
 
 type HistoryErrorResponse = ApiErrorResponse<HistoryErrorCode>;

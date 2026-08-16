@@ -9,6 +9,7 @@ export {
   DeveloperInterestPrediction,
   ProjectPopularityPrediction,
   EvaluationStatus,
+  ForecastKind,
 } from "./enums.js";
 
 export type {

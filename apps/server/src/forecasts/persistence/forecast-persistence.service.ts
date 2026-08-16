@@ -1,4 +1,4 @@
-import type { ForecastType } from "@ai-oracle/shared";
+import type { ForecastType, ForecastKind } from "@ai-oracle/shared";
 
 import type { ForecastStrategyResult } from "../contracts/index.js";
 
@@ -15,6 +15,7 @@ export interface SaveForecastSnapshotInput<
   targetAt: string;
   result: ForecastStrategyResult<TPrediction>;
   createdAt?: Date;
+  forecastKind: ForecastKind;
 }
 
 export class ForecastPersistenceService {
@@ -44,6 +45,7 @@ export class ForecastPersistenceService {
       predictedValue: input.result.predictedValue,
       targetAt,
       createdAt,
+      forecastKind: input.forecastKind,
       explainability: {
         summary: input.result.summary,
         riskReason: input.result.riskReason,

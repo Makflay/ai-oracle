@@ -4,6 +4,7 @@ import type {
   PredictionDirection,
   RiskLevel,
   EvaluationStatus,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 import type { ForecastExplainabilityMetadata } from "../persistence/index.js";
@@ -48,4 +49,5 @@ export interface ForecastSnapshot {
   explainability: ForecastExplainabilityMetadata;
   factors: readonly CurrentForecastFactor[];
   outcome: CurrentForecastOutcome | null;
+  forecastKind: ForecastKind;
 }

@@ -2,6 +2,7 @@ import {
   ApiStatus,
   DeveloperInterestApiErrorCode,
   ForecastType,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 import type {
@@ -80,6 +81,7 @@ export class DeveloperInterestController {
         await this.dependencies.currentForecastService.getCurrent({
           entityId: entity.id,
           forecastType: ForecastType.ShortTerm,
+          forecastKind: ForecastKind.DeveloperInterest,
         });
 
       if (!forecast) {
@@ -134,6 +136,7 @@ export class DeveloperInterestController {
           entitySlug: entity.slug,
           forecastType: ForecastType.ShortTerm,
           strategyKey: DEVELOPER_INTEREST_STRATEGY_KEY,
+          forecastKind: ForecastKind.DeveloperInterest,
         });
 
       response.status(200).json({

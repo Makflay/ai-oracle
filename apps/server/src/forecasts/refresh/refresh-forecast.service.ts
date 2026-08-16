@@ -60,7 +60,11 @@ export class RefreshForecastService {
       throw new Error(`Entity "${entitySlug}" was not found`);
     }
 
-    const executionKey = [entity.id, input.forecastType].join(":");
+    const executionKey = [
+      entity.id,
+      input.forecastType,
+      input.forecastKind,
+    ].join(":");
 
     const inFlight = this.inFlightByForecast.get(executionKey);
 
@@ -94,6 +98,7 @@ export class RefreshForecastService {
     const current = await this.currentForecast.getCurrent({
       entityId,
       forecastType: input.forecastType,
+      forecastKind: input.forecastKind,
     });
 
     const checkedAt = new Date();
@@ -119,6 +124,13 @@ export class RefreshForecastService {
     if (!strategy) {
       throw new Error(
         `Forecast strategy "${input.strategyKey}" is not configured`,
+      );
+    }
+
+    if (strategy.kind !== input.forecastKind) {
+      throw new Error(
+        `Forecast strategy "${input.strategyKey}" does not match ` +
+          `forecast kind "${input.forecastKind}"`,
       );
     }
 
@@ -192,11 +204,13 @@ export class RefreshForecastService {
       targetAt: strategyInput.targetAt,
       result: forecastResult,
       createdAt: asOf,
+      forecastKind: input.forecastKind,
     });
 
     const refreshedForecast = await this.currentForecast.getCurrent({
       entityId,
       forecastType: input.forecastType,
+      forecastKind: input.forecastKind,
     });
 
     if (!refreshedForecast) {

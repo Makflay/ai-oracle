@@ -2,6 +2,7 @@ import {
   ForecastType,
   MetricType,
   DeveloperInterestPrediction,
+  ForecastKind,
 } from "@ai-oracle/shared";
 import {
   createWeightedForecastFactors,
@@ -71,6 +72,7 @@ export class InvalidDeveloperInterestHorizonError extends Error {
 
 export class DeveloperInterestStrategy implements ForecastStrategy<DeveloperInterestPrediction> {
   readonly key = "developer_interest";
+  readonly kind = ForecastKind.DeveloperInterest;
 
   async forecast(
     input: ForecastStrategyInput,

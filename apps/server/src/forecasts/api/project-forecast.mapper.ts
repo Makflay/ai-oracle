@@ -41,4 +41,5 @@ export const toProjectForecastDto = (
         evaluatedAt: forecast.outcome.evaluatedAt.toISOString(),
       }
     : null,
+  forecastKind: forecast.forecastKind,
 });

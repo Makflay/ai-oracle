@@ -3,6 +3,7 @@ import {
   ForecastType as PrismaForecastType,
   RiskLevel as PrismaRiskLevel,
   MetricType as PrismaMetricType,
+  ForecastKind as PrismaForecastKind,
 } from "../generated/prisma/client.js";
 
 import {
@@ -10,6 +11,7 @@ import {
   ForecastType,
   RiskLevel,
   MetricType,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 import type {
@@ -104,6 +106,16 @@ const toDomainMetricType = (type: PrismaMetricType): MetricType => {
   }
 };
 
+const toDomainForecastKind = (kind: PrismaForecastKind): ForecastKind => {
+  switch (kind) {
+    case PrismaForecastKind.PROJECT_POPULARITY:
+      return ForecastKind.ProjectPopularity;
+
+    case PrismaForecastKind.DEVELOPER_INTEREST:
+      return ForecastKind.DeveloperInterest;
+  }
+};
+
 export class PrismaDueForecastRepository implements DueForecastRepository {
   async findDue(input: FindDueForecastsInput): Promise<readonly DueForecast[]> {
     const forecasts = await prisma.forecast.findMany({
@@ -139,6 +151,7 @@ export class PrismaDueForecastRepository implements DueForecastRepository {
         predictedValue: true,
         targetAt: true,
         createdAt: true,
+        forecastKind: true,
 
         entity: {
           select: {
@@ -188,6 +201,7 @@ export class PrismaDueForecastRepository implements DueForecastRepository {
         weight: factor.weight.toNumber(),
         contribution: factor.contribution.toNumber(),
       })),
+      forecastKind: toDomainForecastKind(forecast.forecastKind),
     }));
   }
 }

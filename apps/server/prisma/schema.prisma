@@ -15,6 +15,13 @@ enum ForecastType {
   @@map("forecast_type")
 }
 
+enum ForecastKind {
+  PROJECT_POPULARITY @map("project_popularity")
+  DEVELOPER_INTEREST @map("developer_interest")
+
+  @@map("forecast_kind")
+}
+
 enum PredictionDirection {
   UP      @map("up")
   DOWN    @map("down")
@@ -143,6 +150,7 @@ model Metric {
 model Forecast {
   id             String               @id @default(uuid()) @db.Uuid
   entityId       String               @map("entity_id") @db.Uuid
+  forecastKind   ForecastKind         @map("forecast_kind")
   forecastType   ForecastType
   score          Decimal              @db.Decimal(5, 2)
   status         ForecastStatus       @default(PENDING)
@@ -164,7 +172,7 @@ model Forecast {
   factors ForecastFactor[]
   outcome ForecastOutcome?
 
-  @@index([entityId, forecastType, createdAt(sort: Desc)])
+  @@index([entityId, forecastKind, forecastType, createdAt(sort: Desc)])
   @@index([entityId, targetAt])
   @@index([status, createdAt])
   @@index([targetAt])

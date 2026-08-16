@@ -2,6 +2,7 @@ import {
   ApiStatus,
   ForecastType,
   ProjectForecastApiErrorCode,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 import type {
@@ -104,6 +105,7 @@ export class ProjectForecastController {
         await this.dependencies.currentForecastService.getCurrent({
           entityId: entity.id,
           forecastType: ForecastType.ShortTerm,
+          forecastKind: ForecastKind.ProjectPopularity,
         });
 
       if (!forecast) {
@@ -182,6 +184,7 @@ export class ProjectForecastController {
           entitySlug: entity.slug,
           forecastType: ForecastType.ShortTerm,
           strategyKey: "project_popularity",
+          forecastKind: ForecastKind.ProjectPopularity,
         });
 
       response.status(200).json({

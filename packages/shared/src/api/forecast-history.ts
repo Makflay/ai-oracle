@@ -3,6 +3,7 @@ import type {
   ForecastType,
   EvaluationStatus,
   RiskLevel,
+  ForecastKind,
 } from "../domain/index.js";
 
 export enum ForecastHistoryApiErrorCode {
@@ -31,4 +32,5 @@ export interface ForecastHistoryItemDto {
   targetAt: string;
   createdAt: string;
   outcome: ForecastHistoryOutcomeDto | null;
+  forecastKind: ForecastKind;
 }

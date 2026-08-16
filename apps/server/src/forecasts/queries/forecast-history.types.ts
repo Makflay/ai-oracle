@@ -3,6 +3,7 @@ import type {
   ForecastType,
   RiskLevel,
   EvaluationStatus,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 export interface ForecastHistoryOutcome {
@@ -29,4 +30,5 @@ export interface ForecastHistoryItem {
   targetAt: Date;
   createdAt: Date;
   outcome: ForecastHistoryOutcome | null;
+  forecastKind: ForecastKind;
 }

@@ -29,6 +29,7 @@ export {
   DeveloperInterestPrediction,
   ProjectPopularityPrediction,
   EvaluationStatus,
+  ForecastKind,
 } from "./domain/index.js";
 
 export type {

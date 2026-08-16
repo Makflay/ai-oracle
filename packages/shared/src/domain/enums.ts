@@ -4,6 +4,11 @@ export enum ForecastType {
   LongTerm = "long_term",
 }
 
+export enum ForecastKind {
+  ProjectPopularity = "PROJECT_POPULARITY",
+  DeveloperInterest = "DEVELOPER_INTEREST",
+}
+
 export enum PredictionDirection {
   Up = "up",
   Down = "down",

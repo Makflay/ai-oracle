@@ -4,6 +4,7 @@ import type {
   PredictionDirection,
   RiskLevel,
   EvaluationStatus,
+  ForecastKind,
 } from "../domain/index.js";
 
 export enum ProjectForecastApiErrorCode {
@@ -56,6 +57,7 @@ export interface ProjectForecastDto {
   riskReason: ProjectForecastRiskReasonDto;
   factors: readonly ProjectForecastFactorDto[];
   outcome: ProjectForecastOutcomeDto | null;
+  forecastKind: ForecastKind;
 }
 
 export interface ProjectForecastRefreshDto {

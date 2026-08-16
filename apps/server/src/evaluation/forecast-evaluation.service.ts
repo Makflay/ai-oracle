@@ -109,6 +109,7 @@ export class ForecastEvaluationService {
         score: forecast.score,
         predictedValue: forecast.predictedValue,
         factors: forecast.factors,
+        forecastKind: forecast.forecastKind,
       },
       actual,
     });

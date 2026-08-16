@@ -1,4 +1,4 @@
-import type { ForecastType } from "@ai-oracle/shared";
+import type { ForecastType, ForecastKind } from "@ai-oracle/shared";
 
 import type {
   RawIngestionFailure,
@@ -12,6 +12,7 @@ export interface RefreshForecastInput {
   forecastType: ForecastType;
   strategyKey: string;
   ingestionOptions?: RawIngestionOptions;
+  forecastKind: ForecastKind;
 }
 
 export interface RefreshForecastResult {

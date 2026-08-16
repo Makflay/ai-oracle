@@ -6,6 +6,7 @@ import {
   PredictionDirection as PrismaPredictionDirection,
   ForecastStatus as PrismaForecastStatus,
   EvaluationStatus as PrismaEvaluationStatus,
+  ForecastKind as PrismaForecastKind,
 } from "../generated/prisma/client.js";
 
 import {
@@ -15,6 +16,7 @@ import {
   PredictionDirection,
   ForecastStatus,
   EvaluationStatus,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 import { prisma } from "./client.js";
@@ -206,6 +208,26 @@ const toDomainPredictionDirection = (
   }
 };
 
+const toPrismaForecastKind = (kind: ForecastKind): PrismaForecastKind => {
+  switch (kind) {
+    case ForecastKind.ProjectPopularity:
+      return PrismaForecastKind.PROJECT_POPULARITY;
+
+    case ForecastKind.DeveloperInterest:
+      return PrismaForecastKind.DEVELOPER_INTEREST;
+  }
+};
+
+const toDomainForecastKind = (kind: PrismaForecastKind): ForecastKind => {
+  switch (kind) {
+    case PrismaForecastKind.PROJECT_POPULARITY:
+      return ForecastKind.ProjectPopularity;
+
+    case PrismaForecastKind.DEVELOPER_INTEREST:
+      return ForecastKind.DeveloperInterest;
+  }
+};
+
 const forecastSnapshotInclude = {
   factors: {
     orderBy: {
@@ -232,6 +254,7 @@ const toForecastSnapshot = (
   predictedValue: forecast.predictedValue?.toNumber() ?? null,
   targetAt: forecast.targetAt,
   createdAt: forecast.createdAt,
+  forecastKind: toDomainForecastKind(forecast.forecastKind),
   explainability:
     forecast.explainability as unknown as ForecastExplainabilityMetadata,
   factors: forecast.factors.map((factor) => ({
@@ -289,6 +312,7 @@ const toForecastHistoryItem = (
     risk: toDomainRiskLevel(forecast.risk),
     prediction: forecast.prediction,
     predictedValue: forecast.predictedValue?.toNumber() ?? null,
+    forecastKind: toDomainForecastKind(forecast.forecastKind),
     summary:
       typeof explainability.summary === "string"
         ? explainability.summary
@@ -366,6 +390,7 @@ export class PrismaForecastRepository
         createdAt: snapshot.createdAt,
         status: PrismaForecastStatus.COMPLETED,
         completedAt: snapshot.createdAt,
+        forecastKind: toPrismaForecastKind(snapshot.forecastKind),
         explainability:
           snapshot.explainability as unknown as Prisma.InputJsonValue,
         factors: {
@@ -405,6 +430,7 @@ export class PrismaForecastRepository
       predictedValue: forecast.predictedValue?.toNumber() ?? null,
       targetAt: forecast.targetAt,
       createdAt: forecast.createdAt,
+      forecastKind: toDomainForecastKind(forecast.forecastKind),
       explainability:
         forecast.explainability as unknown as ForecastExplainabilityMetadata,
       factors: forecast.factors.map((factor) => ({
@@ -434,6 +460,7 @@ export class PrismaForecastRepository
       where: {
         entityId: input.entityId,
         forecastType: toPrismaForecastType(input.forecastType),
+        forecastKind: toPrismaForecastKind(input.forecastKind),
       },
       orderBy: [
         {
@@ -467,6 +494,12 @@ export class PrismaForecastRepository
         ...(input.forecastType
           ? {
               forecastType: toPrismaForecastType(input.forecastType),
+            }
+          : {}),
+
+        ...(input.forecastKind
+          ? {
+              forecastKind: toPrismaForecastKind(input.forecastKind),
             }
           : {}),
 

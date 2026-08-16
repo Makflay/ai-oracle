@@ -1,6 +1,7 @@
 import {
   DeveloperInterestPrediction,
   ProjectPopularityPrediction,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 import { EvaluationStatus } from "@ai-oracle/shared";
@@ -22,8 +23,6 @@ import type {
   EvaluationPrediction,
   ForecastEvaluationResult,
 } from "./forecast-evaluation.types.js";
-
-const DEVELOPER_INTEREST_ENTITY_SLUG = "ai-developer-interest";
 
 const roundToTwoDecimals = (value: number): number =>
   Math.round(value * 100) / 100;
@@ -96,7 +95,7 @@ export const evaluateForecast = (
   );
 
   const kind =
-    forecast.entitySlug === DEVELOPER_INTEREST_ENTITY_SLUG
+    forecast.forecastKind === ForecastKind.DeveloperInterest
       ? EvaluationForecastKind.DeveloperInterest
       : EvaluationForecastKind.ProjectPopularity;
 

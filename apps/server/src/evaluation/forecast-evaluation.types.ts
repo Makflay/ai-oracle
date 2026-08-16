@@ -2,6 +2,7 @@ import type {
   DeveloperInterestPrediction,
   ProjectPopularityPrediction,
   EvaluationStatus,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 import type { ActualMetricsResult } from "./actual-metrics.types.js";
@@ -20,6 +21,7 @@ export interface EvaluationForecastSnapshot {
   readonly score: number;
   readonly predictedValue: number | null;
   readonly factors: readonly DueForecastFactor[];
+  readonly forecastKind: ForecastKind;
 }
 
 export interface EvaluateForecastInput {

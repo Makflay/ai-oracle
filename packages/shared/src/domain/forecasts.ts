@@ -5,6 +5,7 @@ import {
   MetricType,
   PredictionDirection,
   RiskLevel,
+  ForecastKind,
 } from "./enums.js";
 
 export type ForecastId = string;
@@ -38,4 +39,5 @@ export interface Forecast {
   targetAt: string;
   result?: ForecastResult;
   failureReason?: string;
+  kind: ForecastKind;
 }

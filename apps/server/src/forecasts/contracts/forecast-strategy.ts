@@ -1,3 +1,5 @@
+import type { ForecastKind } from "@ai-oracle/shared";
+
 import type {
   ForecastStrategyInput,
   ForecastStrategyResult,
@@ -5,6 +7,7 @@ import type {
 
 export interface ForecastStrategy<TPrediction extends string = string> {
   readonly key: string;
+  readonly kind: ForecastKind;
 
   forecast(
     input: ForecastStrategyInput,

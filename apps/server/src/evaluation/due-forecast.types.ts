@@ -3,6 +3,7 @@ import type {
   ForecastType,
   RiskLevel,
   MetricType,
+  ForecastKind,
 } from "@ai-oracle/shared";
 
 export interface DueForecast {
@@ -19,6 +20,7 @@ export interface DueForecast {
   readonly targetAt: Date;
   readonly createdAt: Date;
   readonly factors: readonly DueForecastFactor[];
+  readonly forecastKind: ForecastKind;
 }
 
 export interface DueForecastFactor {

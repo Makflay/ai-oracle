@@ -2,6 +2,7 @@ import {
   ForecastType,
   MetricType,
   ProjectPopularityPrediction,
+  ForecastKind,
 } from "@ai-oracle/shared";
 import {
   createWeightedForecastFactors,
@@ -71,6 +72,7 @@ export class InvalidForecastHorizonError extends Error {
 
 export class ProjectPopularityStrategy implements ForecastStrategy<ProjectPopularityPrediction> {
   readonly key = "project_popularity";
+  readonly kind = ForecastKind.ProjectPopularity;
 
   async forecast(
     input: ForecastStrategyInput,
