@@ -40,7 +40,9 @@ export type {
   CreateForecastSnapshot,
   StoredForecastSnapshot,
   ForecastPersistence,
-} from "./persistence/index.ts";
+} from "./persistence/index.js";
+
+export { ForecastPersistenceService } from "./persistence/index.js";
 
 export type {
   CurrentForecastRepository,

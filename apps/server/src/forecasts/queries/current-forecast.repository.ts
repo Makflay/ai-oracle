@@ -1,6 +1,6 @@
 import type { ForecastType } from "@ai-oracle/shared";
 
-import type { CurrentForecast } from "./current-forecast.types.js";
+import type { ForecastSnapshot } from "./current-forecast.types.js";
 
 export interface FindCurrentForecastInput {
   entityId: string;
@@ -8,5 +8,7 @@ export interface FindCurrentForecastInput {
 }
 
 export interface CurrentForecastRepository {
-  findCurrent(input: FindCurrentForecastInput): Promise<CurrentForecast | null>;
+  findCurrent(
+    input: FindCurrentForecastInput,
+  ): Promise<ForecastSnapshot | null>;
 }
