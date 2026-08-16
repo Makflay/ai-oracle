@@ -1,6 +1,6 @@
-import { MetricType as DomainMetricType } from "@ai-oracle/shared";
-
 import { MetricType as PrismaMetricType } from "../generated/prisma/client.js";
+import { prisma } from "./client.js";
+import { MetricType as DomainMetricType } from "@ai-oracle/shared";
 import type {
   MetricPersistence,
   MetricPersistenceRecord,
@@ -9,7 +9,28 @@ import type {
   MetricHistoryRepository,
   PersistedMetricRecord,
 } from "../metrics/persistence/index.js";
-import { prisma } from "./client.js";
+
+import { toDomainMetricType, toPrismaMetricType } from "./mappers/index.js";
+
+const SUPPORTED_DOMAIN_METRIC_TYPES: ReadonlySet<DomainMetricType> = new Set([
+  DomainMetricType.Downloads,
+  DomainMetricType.Likes,
+  DomainMetricType.Mentions,
+  DomainMetricType.Score,
+  DomainMetricType.Comments,
+  DomainMetricType.Engagement,
+  DomainMetricType.Publications,
+]);
+
+const SUPPORTED_PRISMA_METRIC_TYPES: ReadonlySet<PrismaMetricType> = new Set([
+  PrismaMetricType.DOWNLOADS,
+  PrismaMetricType.LIKES,
+  PrismaMetricType.MENTIONS,
+  PrismaMetricType.SCORE,
+  PrismaMetricType.COMMENTS,
+  PrismaMetricType.ENGAGEMENT,
+  PrismaMetricType.PUBLICATIONS,
+]);
 
 export class PrismaMetricRepository
   implements MetricPersistence, MetricHistoryRepository
@@ -30,7 +51,7 @@ export class PrismaMetricRepository
       data: records.map((record) => ({
         rawRecordId: record.rawRecordId,
         entityId: record.entityId,
-        type: this.toPrismaMetricType(record.metricType),
+        type: this.toPersistedPrismaMetricType(record.metricType),
         value: record.value,
         normalizedValue: record.normalizedValue,
         observedAt: record.recordedAt,
@@ -42,7 +63,7 @@ export class PrismaMetricRepository
       where: {
         OR: records.map((record) => ({
           rawRecordId: record.rawRecordId,
-          type: this.toPrismaMetricType(record.metricType),
+          type: this.toPersistedPrismaMetricType(record.metricType),
         })),
       },
       include: {
@@ -72,7 +93,7 @@ export class PrismaMetricRepository
           rawRecordId: metric.rawRecordId,
           entityId: metric.entityId,
           sourceKey: metric.rawRecord.source.key,
-          metricType: this.toDomainMetricType(metric.type),
+          metricType: this.toPersistedDomainMetricType(metric.type),
           value: metric.value.toNumber(),
           normalizedValue: metric.normalizedValue.toNumber(),
           recordedAt: metric.observedAt,
@@ -137,7 +158,7 @@ export class PrismaMetricRepository
         rawRecordId: metric.rawRecordId,
         entityId: metric.entityId,
         sourceKey: metric.rawRecord.source.key,
-        metricType: this.toDomainMetricType(metric.type),
+        metricType: this.toPersistedDomainMetricType(metric.type),
         value: metric.value.toNumber(),
         normalizedValue: metric.normalizedValue.toNumber(),
         recordedAt: metric.observedAt,
@@ -145,59 +166,23 @@ export class PrismaMetricRepository
     });
   }
 
-  private toPrismaMetricType(metricType: DomainMetricType): PrismaMetricType {
-    switch (metricType) {
-      case DomainMetricType.Downloads:
-        return PrismaMetricType.DOWNLOADS;
-
-      case DomainMetricType.Likes:
-        return PrismaMetricType.LIKES;
-
-      case DomainMetricType.Mentions:
-        return PrismaMetricType.MENTIONS;
-
-      case DomainMetricType.Score:
-        return PrismaMetricType.SCORE;
-
-      case DomainMetricType.Comments:
-        return PrismaMetricType.COMMENTS;
-
-      case DomainMetricType.Engagement:
-        return PrismaMetricType.ENGAGEMENT;
-
-      case DomainMetricType.Publications:
-        return PrismaMetricType.PUBLICATIONS;
-
-      default:
-        throw new Error(`Unsupported metric type "${metricType}"`);
+  private toPersistedPrismaMetricType(
+    metricType: DomainMetricType,
+  ): PrismaMetricType {
+    if (!SUPPORTED_DOMAIN_METRIC_TYPES.has(metricType)) {
+      throw new Error(`Unsupported metric type "${metricType}"`);
     }
+
+    return toPrismaMetricType(metricType);
   }
 
-  private toDomainMetricType(metricType: PrismaMetricType): DomainMetricType {
-    switch (metricType) {
-      case PrismaMetricType.DOWNLOADS:
-        return DomainMetricType.Downloads;
-
-      case PrismaMetricType.LIKES:
-        return DomainMetricType.Likes;
-
-      case PrismaMetricType.MENTIONS:
-        return DomainMetricType.Mentions;
-
-      case PrismaMetricType.SCORE:
-        return DomainMetricType.Score;
-
-      case PrismaMetricType.COMMENTS:
-        return DomainMetricType.Comments;
-
-      case PrismaMetricType.ENGAGEMENT:
-        return DomainMetricType.Engagement;
-
-      case PrismaMetricType.PUBLICATIONS:
-        return DomainMetricType.Publications;
-
-      default:
-        throw new Error(`Unsupported Prisma metric type "${metricType}"`);
+  private toPersistedDomainMetricType(
+    metricType: PrismaMetricType,
+  ): DomainMetricType {
+    if (!SUPPORTED_PRISMA_METRIC_TYPES.has(metricType)) {
+      throw new Error(`Unsupported Prisma metric type "${metricType}"`);
     }
+
+    return toDomainMetricType(metricType);
   }
 }

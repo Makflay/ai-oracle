@@ -1,18 +1,4 @@
-import {
-  ForecastStatus as PrismaForecastStatus,
-  ForecastType as PrismaForecastType,
-  RiskLevel as PrismaRiskLevel,
-  MetricType as PrismaMetricType,
-  ForecastKind as PrismaForecastKind,
-} from "../generated/prisma/client.js";
-
-import {
-  ForecastStatus,
-  ForecastType,
-  RiskLevel,
-  MetricType,
-  ForecastKind,
-} from "@ai-oracle/shared";
+import { ForecastStatus as PrismaForecastStatus } from "../generated/prisma/client.js";
 
 import type {
   DueForecast,
@@ -22,99 +8,13 @@ import type {
 
 import { prisma } from "./client.js";
 
-const toDomainForecastType = (type: PrismaForecastType): ForecastType => {
-  switch (type) {
-    case PrismaForecastType.SHORT_TERM:
-      return ForecastType.ShortTerm;
-
-    case PrismaForecastType.MEDIUM_TERM:
-      return ForecastType.MediumTerm;
-
-    case PrismaForecastType.LONG_TERM:
-      return ForecastType.LongTerm;
-  }
-};
-
-const toDomainForecastStatus = (
-  status: PrismaForecastStatus,
-): ForecastStatus => {
-  switch (status) {
-    case PrismaForecastStatus.PENDING:
-      return ForecastStatus.Pending;
-
-    case PrismaForecastStatus.RUNNING:
-      return ForecastStatus.Running;
-
-    case PrismaForecastStatus.COMPLETED:
-      return ForecastStatus.Completed;
-
-    case PrismaForecastStatus.FAILED:
-      return ForecastStatus.Failed;
-  }
-};
-
-const toDomainRiskLevel = (risk: PrismaRiskLevel): RiskLevel => {
-  switch (risk) {
-    case PrismaRiskLevel.LOW:
-      return RiskLevel.Low;
-
-    case PrismaRiskLevel.MEDIUM:
-      return RiskLevel.Medium;
-
-    case PrismaRiskLevel.HIGH:
-      return RiskLevel.High;
-  }
-};
-
-const toDomainMetricType = (type: PrismaMetricType): MetricType => {
-  switch (type) {
-    case PrismaMetricType.PRICE:
-      return MetricType.Price;
-
-    case PrismaMetricType.VOLUME:
-      return MetricType.Volume;
-
-    case PrismaMetricType.VOLATILITY:
-      return MetricType.Volatility;
-
-    case PrismaMetricType.MOMENTUM:
-      return MetricType.Momentum;
-
-    case PrismaMetricType.SENTIMENT:
-      return MetricType.Sentiment;
-
-    case PrismaMetricType.DOWNLOADS:
-      return MetricType.Downloads;
-
-    case PrismaMetricType.LIKES:
-      return MetricType.Likes;
-
-    case PrismaMetricType.MENTIONS:
-      return MetricType.Mentions;
-
-    case PrismaMetricType.SCORE:
-      return MetricType.Score;
-
-    case PrismaMetricType.COMMENTS:
-      return MetricType.Comments;
-
-    case PrismaMetricType.ENGAGEMENT:
-      return MetricType.Engagement;
-
-    case PrismaMetricType.PUBLICATIONS:
-      return MetricType.Publications;
-  }
-};
-
-const toDomainForecastKind = (kind: PrismaForecastKind): ForecastKind => {
-  switch (kind) {
-    case PrismaForecastKind.PROJECT_POPULARITY:
-      return ForecastKind.ProjectPopularity;
-
-    case PrismaForecastKind.DEVELOPER_INTEREST:
-      return ForecastKind.DeveloperInterest;
-  }
-};
+import {
+  toDomainForecastKind,
+  toDomainForecastStatus,
+  toDomainForecastType,
+  toDomainMetricType,
+  toDomainRiskLevel,
+} from "./mappers/index.js";
 
 export class PrismaDueForecastRepository implements DueForecastRepository {
   async findDue(input: FindDueForecastsInput): Promise<readonly DueForecast[]> {

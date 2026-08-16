@@ -9,17 +9,23 @@ import {
   ForecastKind as PrismaForecastKind,
 } from "../generated/prisma/client.js";
 
-import {
-  ForecastType,
-  RiskLevel,
-  MetricType,
-  PredictionDirection,
-  ForecastStatus,
-  EvaluationStatus,
-  ForecastKind,
-} from "@ai-oracle/shared";
-
 import { prisma } from "./client.js";
+
+import {
+  toDomainEvaluationStatus,
+  toDomainForecastKind,
+  toDomainForecastStatus,
+  toDomainForecastType,
+  toDomainMetricType,
+  toDomainPredictionDirection,
+  toDomainRiskLevel,
+  toPrismaForecastKind,
+  toPrismaForecastStatus,
+  toPrismaForecastType,
+  toPrismaMetricType,
+  toPrismaPredictionDirection,
+  toPrismaRiskLevel,
+} from "./mappers/index.js";
 
 import type {
   CreateForecastSnapshot,
@@ -33,200 +39,6 @@ import type {
   ForecastHistoryRepository,
   ForecastHistoryItem,
 } from "../forecasts/index.ts";
-
-const toPrismaForecastType = (type: ForecastType): PrismaForecastType => {
-  switch (type) {
-    case ForecastType.ShortTerm:
-      return PrismaForecastType.SHORT_TERM;
-
-    case ForecastType.MediumTerm:
-      return PrismaForecastType.MEDIUM_TERM;
-
-    case ForecastType.LongTerm:
-      return PrismaForecastType.LONG_TERM;
-  }
-};
-
-const toDomainForecastType = (type: PrismaForecastType): ForecastType => {
-  switch (type) {
-    case PrismaForecastType.SHORT_TERM:
-      return ForecastType.ShortTerm;
-
-    case PrismaForecastType.MEDIUM_TERM:
-      return ForecastType.MediumTerm;
-
-    case PrismaForecastType.LONG_TERM:
-      return ForecastType.LongTerm;
-  }
-};
-
-const toPrismaRiskLevel = (risk: RiskLevel): PrismaRiskLevel => {
-  switch (risk) {
-    case RiskLevel.Low:
-      return PrismaRiskLevel.LOW;
-
-    case RiskLevel.Medium:
-      return PrismaRiskLevel.MEDIUM;
-
-    case RiskLevel.High:
-      return PrismaRiskLevel.HIGH;
-  }
-};
-
-const toDomainRiskLevel = (risk: PrismaRiskLevel): RiskLevel => {
-  switch (risk) {
-    case PrismaRiskLevel.LOW:
-      return RiskLevel.Low;
-
-    case PrismaRiskLevel.MEDIUM:
-      return RiskLevel.Medium;
-
-    case PrismaRiskLevel.HIGH:
-      return RiskLevel.High;
-  }
-};
-
-const toDomainEvaluationStatus = (
-  status: PrismaEvaluationStatus,
-): EvaluationStatus => {
-  switch (status) {
-    case PrismaEvaluationStatus.CORRECT:
-      return EvaluationStatus.Correct;
-
-    case PrismaEvaluationStatus.INCORRECT:
-      return EvaluationStatus.Incorrect;
-  }
-};
-
-const toPrismaMetricType = (type: MetricType): PrismaMetricType => {
-  switch (type) {
-    case MetricType.Price:
-      return PrismaMetricType.PRICE;
-
-    case MetricType.Volume:
-      return PrismaMetricType.VOLUME;
-
-    case MetricType.Volatility:
-      return PrismaMetricType.VOLATILITY;
-
-    case MetricType.Momentum:
-      return PrismaMetricType.MOMENTUM;
-
-    case MetricType.Sentiment:
-      return PrismaMetricType.SENTIMENT;
-
-    case MetricType.Downloads:
-      return PrismaMetricType.DOWNLOADS;
-
-    case MetricType.Likes:
-      return PrismaMetricType.LIKES;
-
-    case MetricType.Mentions:
-      return PrismaMetricType.MENTIONS;
-
-    case MetricType.Score:
-      return PrismaMetricType.SCORE;
-
-    case MetricType.Comments:
-      return PrismaMetricType.COMMENTS;
-
-    case MetricType.Engagement:
-      return PrismaMetricType.ENGAGEMENT;
-
-    case MetricType.Publications:
-      return PrismaMetricType.PUBLICATIONS;
-  }
-};
-
-const toDomainMetricType = (type: PrismaMetricType): MetricType => {
-  switch (type) {
-    case PrismaMetricType.PRICE:
-      return MetricType.Price;
-
-    case PrismaMetricType.VOLUME:
-      return MetricType.Volume;
-
-    case PrismaMetricType.VOLATILITY:
-      return MetricType.Volatility;
-
-    case PrismaMetricType.MOMENTUM:
-      return MetricType.Momentum;
-
-    case PrismaMetricType.SENTIMENT:
-      return MetricType.Sentiment;
-
-    case PrismaMetricType.DOWNLOADS:
-      return MetricType.Downloads;
-
-    case PrismaMetricType.LIKES:
-      return MetricType.Likes;
-
-    case PrismaMetricType.MENTIONS:
-      return MetricType.Mentions;
-
-    case PrismaMetricType.SCORE:
-      return MetricType.Score;
-
-    case PrismaMetricType.COMMENTS:
-      return MetricType.Comments;
-
-    case PrismaMetricType.ENGAGEMENT:
-      return MetricType.Engagement;
-
-    case PrismaMetricType.PUBLICATIONS:
-      return MetricType.Publications;
-  }
-};
-
-const toPrismaPredictionDirection = (
-  direction: PredictionDirection,
-): PrismaPredictionDirection => {
-  switch (direction) {
-    case PredictionDirection.Up:
-      return PrismaPredictionDirection.UP;
-
-    case PredictionDirection.Down:
-      return PrismaPredictionDirection.DOWN;
-
-    case PredictionDirection.Neutral:
-      return PrismaPredictionDirection.NEUTRAL;
-  }
-};
-
-const toDomainPredictionDirection = (
-  direction: PrismaPredictionDirection,
-): PredictionDirection => {
-  switch (direction) {
-    case PrismaPredictionDirection.UP:
-      return PredictionDirection.Up;
-
-    case PrismaPredictionDirection.DOWN:
-      return PredictionDirection.Down;
-
-    case PrismaPredictionDirection.NEUTRAL:
-      return PredictionDirection.Neutral;
-  }
-};
-
-const toPrismaForecastKind = (kind: ForecastKind): PrismaForecastKind => {
-  switch (kind) {
-    case ForecastKind.ProjectPopularity:
-      return PrismaForecastKind.PROJECT_POPULARITY;
-
-    case ForecastKind.DeveloperInterest:
-      return PrismaForecastKind.DEVELOPER_INTEREST;
-  }
-};
-
-const toDomainForecastKind = (kind: PrismaForecastKind): ForecastKind => {
-  switch (kind) {
-    case PrismaForecastKind.PROJECT_POPULARITY:
-      return ForecastKind.ProjectPopularity;
-
-    case PrismaForecastKind.DEVELOPER_INTEREST:
-      return ForecastKind.DeveloperInterest;
-  }
-};
 
 const forecastSnapshotInclude = {
   factors: {
@@ -333,41 +145,6 @@ const toForecastHistoryItem = (
   };
 };
 
-const toPrismaForecastStatus = (
-  status: ForecastStatus,
-): PrismaForecastStatus => {
-  switch (status) {
-    case ForecastStatus.Pending:
-      return PrismaForecastStatus.PENDING;
-
-    case ForecastStatus.Running:
-      return PrismaForecastStatus.RUNNING;
-
-    case ForecastStatus.Completed:
-      return PrismaForecastStatus.COMPLETED;
-
-    case ForecastStatus.Failed:
-      return PrismaForecastStatus.FAILED;
-  }
-};
-
-const toDomainForecastStatus = (
-  status: PrismaForecastStatus,
-): ForecastStatus => {
-  switch (status) {
-    case PrismaForecastStatus.PENDING:
-      return ForecastStatus.Pending;
-
-    case PrismaForecastStatus.RUNNING:
-      return ForecastStatus.Running;
-
-    case PrismaForecastStatus.COMPLETED:
-      return ForecastStatus.Completed;
-
-    case PrismaForecastStatus.FAILED:
-      return ForecastStatus.Failed;
-  }
-};
 export class PrismaForecastRepository
   implements
     ForecastPersistence,
