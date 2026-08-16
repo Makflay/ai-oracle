@@ -38,6 +38,7 @@ import type {
   FindForecastHistoryInput,
   ForecastHistoryRepository,
   ForecastHistoryItem,
+  StoredForecastFactorSnapshot,
 } from "../forecasts/index.ts";
 
 const forecastSnapshotInclude = {
@@ -196,21 +197,8 @@ export class PrismaForecastRepository
       },
     });
 
-    return {
-      id: forecast.id,
-      entityId: forecast.entityId,
-      forecastType: toDomainForecastType(forecast.forecastType),
-      score: forecast.score.toNumber(),
-      confidence: forecast.confidence?.toNumber() ?? null,
-      risk: toDomainRiskLevel(forecast.risk),
-      prediction: forecast.prediction,
-      predictedValue: forecast.predictedValue?.toNumber() ?? null,
-      targetAt: forecast.targetAt,
-      createdAt: forecast.createdAt,
-      forecastKind: toDomainForecastKind(forecast.forecastKind),
-      explainability:
-        forecast.explainability as unknown as ForecastExplainabilityMetadata,
-      factors: forecast.factors.map((factor) => ({
+    const factors: readonly StoredForecastFactorSnapshot[] =
+      forecast.factors.map((factor) => ({
         id: factor.id,
         forecastId: factor.forecastId,
         metricId: factor.metricId,
@@ -226,7 +214,23 @@ export class PrismaForecastRepository
         description: factor.description,
         position: factor.position,
         createdAt: factor.createdAt,
-      })),
+      }));
+
+    return {
+      id: forecast.id,
+      entityId: forecast.entityId,
+      forecastType: toDomainForecastType(forecast.forecastType),
+      score: forecast.score.toNumber(),
+      confidence: forecast.confidence?.toNumber() ?? null,
+      risk: toDomainRiskLevel(forecast.risk),
+      prediction: forecast.prediction,
+      predictedValue: forecast.predictedValue?.toNumber() ?? null,
+      targetAt: forecast.targetAt,
+      createdAt: forecast.createdAt,
+      forecastKind: toDomainForecastKind(forecast.forecastKind),
+      explainability:
+        forecast.explainability as unknown as ForecastExplainabilityMetadata,
+      factors,
     };
   }
 

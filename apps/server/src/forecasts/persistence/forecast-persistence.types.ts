@@ -41,6 +41,16 @@ export interface CreateForecastFactorSnapshot {
   position: number;
 }
 
+export interface StoredForecastFactorSnapshot extends Omit<
+  CreateForecastFactorSnapshot,
+  "direction"
+> {
+  id: string;
+  forecastId: string;
+  direction: PredictionDirection | null;
+  createdAt: Date;
+}
+
 export interface StoredForecastSnapshot {
   id: string;
   entityId: string;
@@ -53,7 +63,7 @@ export interface StoredForecastSnapshot {
   targetAt: Date;
   createdAt: Date;
   explainability: ForecastExplainabilityMetadata;
-  factors: readonly CreateForecastFactorSnapshot[];
+  factors: readonly StoredForecastFactorSnapshot[];
   forecastKind: ForecastKind;
 }
 
