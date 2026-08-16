@@ -115,6 +115,9 @@ const toForecastHistoryItem = (
     summary?: unknown;
   };
 
+  const summary =
+    typeof explainability.summary === "string" ? explainability.summary : "";
+
   return {
     id: forecast.id,
     entityId: forecast.entityId,
@@ -126,10 +129,7 @@ const toForecastHistoryItem = (
     prediction: forecast.prediction,
     predictedValue: forecast.predictedValue?.toNumber() ?? null,
     forecastKind: toDomainForecastKind(forecast.forecastKind),
-    summary:
-      typeof explainability.summary === "string"
-        ? explainability.summary
-        : (forecast.summary ?? ""),
+    summary,
     targetAt: forecast.targetAt,
     createdAt: forecast.createdAt,
     outcome: forecast.outcome

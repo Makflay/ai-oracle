@@ -154,15 +154,10 @@ model Forecast {
   forecastType   ForecastType
   score          Decimal              @db.Decimal(5, 2)
   status         ForecastStatus       @default(PENDING)
-  direction      PredictionDirection?
-  riskLevel      RiskLevel?           @map("risk_level")
   confidence     Decimal?             @db.Decimal(5, 2)
   risk           RiskLevel
   prediction     String
   predictedValue Decimal?             @map("predicted_value") @db.Decimal(24, 8)
-  summary        String?
-  failureReason  String?              @map("failure_reason")
-  modelVersion   String?              @map("model_version")
   explainability Json                 @db.JsonB
   targetAt       DateTime             @map("target_at") @db.Timestamptz(3)
   createdAt      DateTime             @default(now()) @map("created_at")

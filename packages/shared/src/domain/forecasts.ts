@@ -38,6 +38,5 @@ export interface Forecast {
   createdAt: string;
   targetAt: string;
   result?: ForecastResult;
-  failureReason?: string;
   kind: ForecastKind;
 }
