@@ -27,4 +27,7 @@ export interface DueForecastFactor {
   readonly position: number;
   readonly entitySlug: string;
   readonly factors: readonly DueForecastFactor[];
+  readonly normalizedValue: number;
+  readonly weight: number;
+  readonly contribution: number;
 }

@@ -151,6 +151,9 @@ export class PrismaDueForecastRepository implements DueForecastRepository {
             sourceKey: true,
             metricType: true,
             position: true,
+            normalizedValue: true,
+            weight: true,
+            contribution: true,
           },
           orderBy: {
             position: "asc",
@@ -180,6 +183,9 @@ export class PrismaDueForecastRepository implements DueForecastRepository {
         sourceKey: factor.sourceKey,
         metricType: toDomainMetricType(factor.metricType),
         position: factor.position,
+        normalizedValue: factor.normalizedValue.toNumber(),
+        weight: factor.weight.toNumber(),
+        contribution: factor.contribution.toNumber(),
       })),
     }));
   }
