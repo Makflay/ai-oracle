@@ -2,6 +2,7 @@ import type {
   ForecastStatus,
   ForecastType,
   RiskLevel,
+  MetricType,
 } from "@ai-oracle/shared";
 
 export interface DueForecast {
@@ -16,4 +17,14 @@ export interface DueForecast {
   readonly predictedValue: number | null;
   readonly targetAt: Date;
   readonly createdAt: Date;
+}
+
+export interface DueForecastFactor {
+  readonly id: string;
+  readonly metricId: string | null;
+  readonly sourceKey: string;
+  readonly metricType: MetricType;
+  readonly position: number;
+  readonly entitySlug: string;
+  readonly factors: readonly DueForecastFactor[];
 }

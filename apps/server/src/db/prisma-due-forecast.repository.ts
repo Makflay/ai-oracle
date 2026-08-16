@@ -2,9 +2,15 @@ import {
   ForecastStatus as PrismaForecastStatus,
   ForecastType as PrismaForecastType,
   RiskLevel as PrismaRiskLevel,
+  MetricType as PrismaMetricType,
 } from "../generated/prisma/client.js";
 
-import { ForecastStatus, ForecastType, RiskLevel } from "@ai-oracle/shared";
+import {
+  ForecastStatus,
+  ForecastType,
+  RiskLevel,
+  MetricType,
+} from "@ai-oracle/shared";
 
 import type {
   DueForecast,
@@ -58,6 +64,46 @@ const toDomainRiskLevel = (risk: PrismaRiskLevel): RiskLevel => {
   }
 };
 
+const toDomainMetricType = (type: PrismaMetricType): MetricType => {
+  switch (type) {
+    case PrismaMetricType.PRICE:
+      return MetricType.Price;
+
+    case PrismaMetricType.VOLUME:
+      return MetricType.Volume;
+
+    case PrismaMetricType.VOLATILITY:
+      return MetricType.Volatility;
+
+    case PrismaMetricType.MOMENTUM:
+      return MetricType.Momentum;
+
+    case PrismaMetricType.SENTIMENT:
+      return MetricType.Sentiment;
+
+    case PrismaMetricType.DOWNLOADS:
+      return MetricType.Downloads;
+
+    case PrismaMetricType.LIKES:
+      return MetricType.Likes;
+
+    case PrismaMetricType.MENTIONS:
+      return MetricType.Mentions;
+
+    case PrismaMetricType.SCORE:
+      return MetricType.Score;
+
+    case PrismaMetricType.COMMENTS:
+      return MetricType.Comments;
+
+    case PrismaMetricType.ENGAGEMENT:
+      return MetricType.Engagement;
+
+    case PrismaMetricType.PUBLICATIONS:
+      return MetricType.Publications;
+  }
+};
+
 export class PrismaDueForecastRepository implements DueForecastRepository {
   async findDue(input: FindDueForecastsInput): Promise<readonly DueForecast[]> {
     const forecasts = await prisma.forecast.findMany({
@@ -92,6 +138,24 @@ export class PrismaDueForecastRepository implements DueForecastRepository {
         predictedValue: true,
         targetAt: true,
         createdAt: true,
+
+        entity: {
+          select: {
+            slug: true,
+          },
+        },
+        factors: {
+          select: {
+            id: true,
+            metricId: true,
+            sourceKey: true,
+            metricType: true,
+            position: true,
+          },
+          orderBy: {
+            position: "asc",
+          },
+        },
       },
     });
 
@@ -107,6 +171,16 @@ export class PrismaDueForecastRepository implements DueForecastRepository {
       predictedValue: forecast.predictedValue?.toNumber() ?? null,
       targetAt: forecast.targetAt,
       createdAt: forecast.createdAt,
+
+      entitySlug: forecast.entity.slug,
+
+      factors: forecast.factors.map((factor) => ({
+        id: factor.id,
+        metricId: factor.metricId,
+        sourceKey: factor.sourceKey,
+        metricType: toDomainMetricType(factor.metricType),
+        position: factor.position,
+      })),
     }));
   }
 }
