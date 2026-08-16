@@ -32,3 +32,15 @@ export interface MetricPersistence {
     records: readonly MetricPersistenceRecord[],
   ): Promise<MetricPersistenceResult>;
 }
+
+export interface FindMetricHistoryInput {
+  readonly entityId: string;
+  readonly observedFrom: Date;
+  readonly observedTo: Date;
+}
+
+export interface MetricHistoryRepository {
+  findHistory(
+    input: FindMetricHistoryInput,
+  ): Promise<readonly PersistedMetricRecord[]>;
+}

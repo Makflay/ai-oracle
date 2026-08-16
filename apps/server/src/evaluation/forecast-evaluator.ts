@@ -105,7 +105,11 @@ export const evaluateForecast = (
     forecast.prediction,
   );
 
-  const actualPrediction = determineActualPrediction(kind, actualValue);
+  const actualPrediction = determineActualPrediction(
+    kind,
+    actualValue,
+    forecast.score,
+  );
 
   return {
     forecastId: forecast.id,
@@ -151,10 +155,13 @@ const validateExpectedPrediction = (
 const determineActualPrediction = (
   kind: EvaluationForecastKind,
   actualValue: number,
+  forecastCurrentValue: number,
 ): EvaluationPrediction => {
   if (kind === EvaluationForecastKind.DeveloperInterest) {
     return determineDeveloperInterestPrediction(actualValue);
   }
 
-  return determineProjectPopularityPrediction(actualValue);
+  const actualDelta = roundToTwoDecimals(actualValue - forecastCurrentValue);
+
+  return determineProjectPopularityPrediction(actualDelta);
 };

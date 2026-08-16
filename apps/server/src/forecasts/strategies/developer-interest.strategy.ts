@@ -9,6 +9,9 @@ import {
   calculateForecastConfidence,
   calculateForecastRisk,
   createForecastRiskReason,
+  calculateForecastTrend,
+  explainForecastFactors,
+  selectForecastMetricPairs,
 } from "../calculations/index.js";
 
 import type {
@@ -74,45 +77,75 @@ export class DeveloperInterestStrategy implements ForecastStrategy<DeveloperInte
   ): Promise<ForecastStrategyResult<DeveloperInterestPrediction>> {
     this.validateInput(input);
 
-    const latestMetrics = this.selectLatestMetrics(input.metrics);
+    const supportedMetrics = input.metrics.filter((metric) =>
+      this.isSupportedMetric(metric),
+    );
+
+    const pairs = selectForecastMetricPairs(supportedMetrics);
+
+    const currentMetrics = pairs.map((pair) => pair.current);
+
+    const latestMetrics = this.selectLatestMetrics(currentMetrics);
 
     const metricsBySource = this.groupMetricsBySource(latestMetrics);
 
     this.ensureRequiredSources(metricsBySource);
 
-    const factors = this.createFactors(metricsBySource);
+    const currentFactors = this.createFactors(metricsBySource);
 
     const index = this.clampIndex(
-      factors.reduce((total, factor) => total + factor.contribution, 0),
+      currentFactors.reduce((total, factor) => total + factor.contribution, 0),
     );
 
-    const prediction = determineDeveloperInterestPrediction(index);
+    const trend = calculateForecastTrend(index, currentFactors, pairs);
+
+    const factors = explainForecastFactors(currentFactors, trend);
+
+    const prediction = determineDeveloperInterestPrediction(
+      trend.predictedValue,
+    );
+
     const confidence = calculateForecastConfidence({
       metrics: latestMetrics,
       asOf: input.asOf,
       expectedSignalCount: 8,
       expectedSourceCount: 3,
+      trendHistoryQuality: trend.historyQuality,
     });
+
     const risk = calculateForecastRisk({
       confidence: confidence.value,
       sourceConsistency: confidence.sourceConsistency,
       freshness: confidence.freshness,
       signalCoverage: confidence.signalCoverage,
     });
+
     const riskReason = createForecastRiskReason(risk);
+
+    const summary = trend.trendAvailable
+      ? `Current global AI developer interest index is ` +
+        `${index}/100. Historical baseline is ` +
+        `${trend.baselineValue}/100 over ` +
+        `${trend.actualHistorySpanDays} days. ` +
+        `Observed delta is ${trend.observedDelta}; ` +
+        `projected 14-day delta is ${trend.projectedDelta}. ` +
+        `Expected value at targetAt is ` +
+        `${trend.predictedValue}/100.`
+      : `Current global AI developer interest index is ` +
+        `${index}/100. Comparable historical depth is below ` +
+        "the required 7 days, so no trend was extrapolated. " +
+        `The conservative expected value at targetAt is ` +
+        `${trend.predictedValue}/100.`;
 
     return {
       score: index,
+      predictedValue: trend.predictedValue,
       prediction,
       confidence: confidence.value,
       risk: risk.level,
       riskReason,
       factors,
-      summary:
-        `Global AI developer interest index is ${index}/100 ` +
-        `for the next ${FORECAST_HORIZON_DAYS} days, ` +
-        "based on Hacker News (40%), " +
-        "Hugging Face (35%), and arXiv (25%).",
+      summary,
     };
   }
 

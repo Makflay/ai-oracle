@@ -17,6 +17,7 @@ export interface EvaluationForecastSnapshot {
   readonly id: string;
   readonly entitySlug: string;
   readonly prediction: string;
+  readonly score: number;
   readonly predictedValue: number | null;
   readonly factors: readonly DueForecastFactor[];
 }

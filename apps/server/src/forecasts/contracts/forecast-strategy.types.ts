@@ -5,7 +5,7 @@ import type {
   RiskLevel,
 } from "@ai-oracle/shared";
 
-import type { ForecastRiskReason } from "../calculations/index.ts";
+import type { ForecastRiskReason } from "../calculations/index.js";
 
 export interface ForecastMetricInput {
   readonly metricId: string;
@@ -38,6 +38,7 @@ export interface ForecastStrategyFactor {
 
 export interface ForecastStrategyResult<TPrediction extends string = string> {
   readonly score: number;
+  readonly predictedValue: number;
   readonly prediction: TPrediction;
   readonly confidence: number;
   readonly risk: RiskLevel;

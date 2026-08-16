@@ -1,7 +1,10 @@
 import { RawIngestionOrchestrator } from "../../ingestion/index.js";
 import { MetricProcessingService } from "../../metrics/index.js";
 
-import type { MetricSourceRecord } from "../../metrics/index.js";
+import type {
+  MetricSourceRecord,
+  MetricHistoryRepository,
+} from "../../metrics/index.js";
 
 import type {
   ForecastMetricInput,
@@ -22,11 +25,16 @@ import { FORECAST_REFRESH_COOLDOWN_MS } from "./refresh-forecast.constants.js";
 
 import type { ForecastEntityRepository } from "./forecast-entity.repository.js";
 
+import { HISTORICAL_LOOKBACK_DAYS } from "../calculations/index.js";
+
+const DAY_MS = 24 * 60 * 60 * 1_000;
+
 export class RefreshForecastService {
   constructor(
     private readonly entities: ForecastEntityRepository,
     private readonly ingestion: RawIngestionOrchestrator,
     private readonly metrics: MetricProcessingService,
+    private readonly metricHistory: MetricHistoryRepository,
     private readonly strategies: ForecastStrategyRegistry,
     private readonly forecastPersistence: ForecastPersistenceService,
     private readonly currentForecast: CurrentForecastService,
@@ -148,10 +156,18 @@ export class RefreshForecastService {
 
     const asOf = new Date();
 
+    const historicalMetrics = await this.metricHistory.findHistory({
+      entityId,
+      observedFrom: new Date(
+        asOf.getTime() - HISTORICAL_LOOKBACK_DAYS * DAY_MS,
+      ),
+      observedTo: asOf,
+    });
+
     const targetAt = new Date(asOf.getTime() + 14 * 24 * 60 * 60 * 1_000);
 
     const forecastMetrics: readonly ForecastMetricInput[] =
-      metricResult.records.map((metric) => ({
+      historicalMetrics.map((metric) => ({
         metricId: metric.id,
         sourceKey: metric.sourceKey,
         type: metric.metricType,

@@ -8,28 +8,33 @@ interface ScoreThreshold<TPrediction extends string> {
   readonly prediction: TPrediction;
 }
 
+interface DeltaThreshold<TPrediction extends string> {
+  readonly minimumDelta: number;
+  readonly prediction: TPrediction;
+}
+
 export const PROJECT_POPULARITY_THRESHOLDS = [
   {
-    minimumScore: 80,
+    minimumDelta: 10,
     prediction: ProjectPopularityPrediction.StrongRise,
   },
   {
-    minimumScore: 60,
+    minimumDelta: 3,
     prediction: ProjectPopularityPrediction.Rise,
   },
   {
-    minimumScore: 40,
+    minimumDelta: -3,
     prediction: ProjectPopularityPrediction.Stable,
   },
   {
-    minimumScore: 20,
+    minimumDelta: -10,
     prediction: ProjectPopularityPrediction.Decline,
   },
   {
-    minimumScore: 0,
+    minimumDelta: Number.NEGATIVE_INFINITY,
     prediction: ProjectPopularityPrediction.StrongDecline,
   },
-] as const satisfies readonly ScoreThreshold<ProjectPopularityPrediction>[];
+] as const satisfies readonly DeltaThreshold<ProjectPopularityPrediction>[];
 
 export const DEVELOPER_INTEREST_THRESHOLDS = [
   {
@@ -55,9 +60,23 @@ export class InvalidForecastScoreError extends Error {
 }
 
 export function determineProjectPopularityPrediction(
-  score: number,
+  projectedDelta: number,
 ): ProjectPopularityPrediction {
-  return resolvePrediction(score, PROJECT_POPULARITY_THRESHOLDS);
+  if (!Number.isFinite(projectedDelta)) {
+    throw new InvalidForecastScoreError(projectedDelta);
+  }
+
+  const threshold = PROJECT_POPULARITY_THRESHOLDS.find(
+    (item) => projectedDelta >= item.minimumDelta,
+  );
+
+  if (!threshold) {
+    throw new Error(
+      "Project popularity thresholds must include a lower boundary",
+    );
+  }
+
+  return threshold.prediction;
 }
 
 export function determineDeveloperInterestPrediction(

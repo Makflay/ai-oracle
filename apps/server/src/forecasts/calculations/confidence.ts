@@ -6,9 +6,10 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1_000;
 const DECIMAL_PRECISION = 2;
 
 export const CONFIDENCE_COMPONENT_WEIGHTS = {
-  sourceConsistency: 0.4,
-  freshness: 0.35,
-  signalCoverage: 0.25,
+  sourceConsistency: 0.32,
+  freshness: 0.28,
+  signalCoverage: 0.2,
+  trendHistoryQuality: 0.2,
 } as const;
 
 export const FRESHNESS_THRESHOLDS = [
@@ -35,6 +36,7 @@ export interface ForecastConfidenceInput {
   readonly asOf: string;
   readonly expectedSignalCount: number;
   readonly expectedSourceCount: number;
+  readonly trendHistoryQuality: number;
 }
 
 export interface ForecastConfidenceResult {
@@ -42,6 +44,7 @@ export interface ForecastConfidenceResult {
   readonly sourceConsistency: number;
   readonly freshness: number;
   readonly signalCoverage: number;
+  readonly trendHistoryQuality: number;
 }
 
 export class InvalidForecastConfidenceInputError extends Error {
@@ -56,12 +59,15 @@ export function calculateForecastConfidence(
 ): ForecastConfidenceResult {
   validateInput(input);
 
+  const trendHistoryQuality = clampAndRound(input.trendHistoryQuality);
+
   if (input.metrics.length === 0) {
     return {
       value: 0,
       sourceConsistency: 0,
       freshness: 0,
       signalCoverage: 0,
+      trendHistoryQuality,
     };
   }
 
@@ -82,7 +88,8 @@ export function calculateForecastConfidence(
   const value = clampAndRound(
     sourceConsistency * CONFIDENCE_COMPONENT_WEIGHTS.sourceConsistency +
       freshness * CONFIDENCE_COMPONENT_WEIGHTS.freshness +
-      signalCoverage * CONFIDENCE_COMPONENT_WEIGHTS.signalCoverage,
+      signalCoverage * CONFIDENCE_COMPONENT_WEIGHTS.signalCoverage +
+      trendHistoryQuality * CONFIDENCE_COMPONENT_WEIGHTS.trendHistoryQuality,
   );
 
   return {
@@ -90,6 +97,7 @@ export function calculateForecastConfidence(
     sourceConsistency,
     freshness,
     signalCoverage,
+    trendHistoryQuality,
   };
 }
 
@@ -188,6 +196,16 @@ function validateInput(input: ForecastConfidenceInput): void {
   ) {
     throw new InvalidForecastConfidenceInputError(
       "Expected source count must be a positive integer",
+    );
+  }
+
+  if (
+    !Number.isFinite(input.trendHistoryQuality) ||
+    input.trendHistoryQuality < MIN_SCORE ||
+    input.trendHistoryQuality > MAX_SCORE
+  ) {
+    throw new InvalidForecastConfidenceInputError(
+      "Trend history quality must be between 0 and 100",
     );
   }
 

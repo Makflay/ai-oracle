@@ -35,3 +35,17 @@ export type {
 export { createForecastRiskReason } from "./risk-reason.js";
 
 export type { ForecastRiskReason } from "./risk-reason.js";
+
+export {
+  FORECAST_HORIZON_DAYS,
+  HISTORICAL_LOOKBACK_DAYS,
+  MAXIMUM_PROJECTED_CHANGE,
+  MINIMUM_USABLE_HISTORY_DAYS,
+  calculateForecastTrend,
+  clampForecastValue,
+  directionFromDelta,
+  explainForecastFactors,
+  selectForecastMetricPairs,
+} from "./trend.js";
+
+export type { ForecastMetricTrendPair, ForecastTrendResult } from "./trend.js";

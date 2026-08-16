@@ -186,6 +186,7 @@ export const createApplicationDependencies = (): ApplicationDependencies => {
     forecastEntityRepository,
     rawIngestionOrchestrator,
     metricProcessingService,
+    metricRepository,
     strategyRegistry,
     forecastPersistenceService,
     currentForecastService,

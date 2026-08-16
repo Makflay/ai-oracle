@@ -30,4 +30,6 @@ export type {
   MetricPersistenceRecord,
   MetricPersistenceResult,
   PersistedMetricRecord,
+  FindMetricHistoryInput,
+  MetricHistoryRepository,
 } from "./persistence/index.js";

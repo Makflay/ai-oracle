@@ -5,10 +5,15 @@ import type {
   MetricPersistence,
   MetricPersistenceRecord,
   MetricPersistenceResult,
+  FindMetricHistoryInput,
+  MetricHistoryRepository,
+  PersistedMetricRecord,
 } from "../metrics/persistence/index.js";
 import { prisma } from "./client.js";
 
-export class PrismaMetricRepository implements MetricPersistence {
+export class PrismaMetricRepository
+  implements MetricPersistence, MetricHistoryRepository
+{
   async save(
     records: readonly MetricPersistenceRecord[],
   ): Promise<MetricPersistenceResult> {
@@ -74,6 +79,70 @@ export class PrismaMetricRepository implements MetricPersistence {
         };
       }),
     };
+  }
+
+  async findHistory(
+    input: FindMetricHistoryInput,
+  ): Promise<readonly PersistedMetricRecord[]> {
+    if (
+      Number.isNaN(input.observedFrom.getTime()) ||
+      Number.isNaN(input.observedTo.getTime())
+    ) {
+      throw new Error("Metric history requires valid date boundaries");
+    }
+
+    if (input.observedFrom > input.observedTo) {
+      throw new Error("Metric history observedFrom cannot be after observedTo");
+    }
+
+    const metrics = await prisma.metric.findMany({
+      where: {
+        entityId: input.entityId,
+        observedAt: {
+          gte: input.observedFrom,
+          lte: input.observedTo,
+        },
+        rawRecordId: {
+          not: null,
+        },
+      },
+      include: {
+        rawRecord: {
+          include: {
+            source: {
+              select: {
+                key: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        {
+          observedAt: "desc",
+        },
+        {
+          id: "desc",
+        },
+      ],
+    });
+
+    return metrics.map((metric) => {
+      if (!metric.rawRecordId || !metric.rawRecord) {
+        throw new Error(`Metric "${metric.id}" has no RawRecord`);
+      }
+
+      return {
+        id: metric.id,
+        rawRecordId: metric.rawRecordId,
+        entityId: metric.entityId,
+        sourceKey: metric.rawRecord.source.key,
+        metricType: this.toDomainMetricType(metric.type),
+        value: metric.value.toNumber(),
+        normalizedValue: metric.normalizedValue.toNumber(),
+        recordedAt: metric.observedAt,
+      };
+    });
   }
 
   private toPrismaMetricType(metricType: DomainMetricType): PrismaMetricType {

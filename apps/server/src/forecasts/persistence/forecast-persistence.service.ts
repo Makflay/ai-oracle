@@ -41,7 +41,7 @@ export class ForecastPersistenceService {
       confidence: input.result.confidence,
       risk: input.result.risk,
       prediction: input.result.prediction,
-      predictedValue: input.result.score,
+      predictedValue: input.result.predictedValue,
       targetAt,
       createdAt,
       explainability: {
