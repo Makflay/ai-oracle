@@ -1,14 +1,15 @@
-import type { ForecastType } from "@ai-oracle/shared";
+import type { ForecastType, ForecastStatus } from "@ai-oracle/shared";
 
-import type { ForecastSnapshot } from "./current-forecast.types.js";
+import type { ForecastHistoryItem } from "./forecast-history.types.js";
 
 export interface FindForecastHistoryInput {
-  entityId: string;
-  forecastType: ForecastType;
+  readonly entityId?: string | undefined;
+  readonly forecastType?: ForecastType | undefined;
+  readonly status?: ForecastStatus | undefined;
 }
 
 export interface ForecastHistoryRepository {
   findHistory(
     input: FindForecastHistoryInput,
-  ): Promise<readonly ForecastSnapshot[]>;
+  ): Promise<readonly ForecastHistoryItem[]>;
 }

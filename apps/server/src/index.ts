@@ -12,6 +12,8 @@ import { createProjectForecastRouter } from "./forecasts/index.js";
 
 import { createDeveloperInterestRouter } from "./forecasts/index.js";
 
+import { createForecastHistoryRouter } from "./forecasts/index.js";
+
 const app = express();
 
 const entityRepository = new PrismaEntityRepository();
@@ -38,5 +40,7 @@ app.use("/api/entities", createEntityRouter(entityService));
 //     refreshForecastService,
 //   }),
 // );
+
+//app.use("/api/forecasts", createForecastHistoryRouter(forecastHistoryService));
 
 app.listen(config.port);

@@ -4,6 +4,7 @@ import {
   RiskLevel as PrismaRiskLevel,
   MetricType as PrismaMetricType,
   PredictionDirection as PrismaPredictionDirection,
+  ForecastStatus as PrismaForecastStatus,
 } from "../generated/prisma/client.js";
 
 import {
@@ -11,6 +12,7 @@ import {
   RiskLevel,
   MetricType,
   PredictionDirection,
+  ForecastStatus,
 } from "@ai-oracle/shared";
 
 import { prisma } from "./client.js";
@@ -25,6 +27,7 @@ import type {
   FindCurrentForecastInput,
   FindForecastHistoryInput,
   ForecastHistoryRepository,
+  ForecastHistoryItem,
 } from "../forecasts/index.ts";
 
 const toPrismaForecastType = (type: ForecastType): PrismaForecastType => {
@@ -249,6 +252,88 @@ const toForecastSnapshot = (
     : null,
 });
 
+const forecastHistoryInclude = {
+  outcome: true,
+} satisfies Prisma.ForecastInclude;
+
+type PrismaForecastHistoryItem = Prisma.ForecastGetPayload<{
+  include: typeof forecastHistoryInclude;
+}>;
+
+const toForecastHistoryItem = (
+  forecast: PrismaForecastHistoryItem,
+): ForecastHistoryItem => {
+  const explainability = forecast.explainability as unknown as {
+    summary?: unknown;
+  };
+
+  return {
+    id: forecast.id,
+    entityId: forecast.entityId,
+    forecastType: toDomainForecastType(forecast.forecastType),
+    status: toDomainForecastStatus(forecast.status),
+    score: forecast.score.toNumber(),
+    confidence: forecast.confidence?.toNumber() ?? null,
+    risk: toDomainRiskLevel(forecast.risk),
+    prediction: forecast.prediction,
+    predictedValue: forecast.predictedValue?.toNumber() ?? null,
+    summary:
+      typeof explainability.summary === "string"
+        ? explainability.summary
+        : (forecast.summary ?? ""),
+    targetAt: forecast.targetAt,
+    createdAt: forecast.createdAt,
+    outcome: forecast.outcome
+      ? {
+          id: forecast.outcome.id,
+          forecastId: forecast.outcome.forecastId,
+          actualDirection: toDomainPredictionDirection(
+            forecast.outcome.actualDirection,
+          ),
+          actualValue: forecast.outcome.actualValue?.toNumber() ?? null,
+          accuracyScore: forecast.outcome.accuracyScore?.toNumber() ?? null,
+          observedAt: forecast.outcome.observedAt,
+          createdAt: forecast.outcome.createdAt,
+        }
+      : null,
+  };
+};
+
+const toPrismaForecastStatus = (
+  status: ForecastStatus,
+): PrismaForecastStatus => {
+  switch (status) {
+    case ForecastStatus.Pending:
+      return PrismaForecastStatus.PENDING;
+
+    case ForecastStatus.Running:
+      return PrismaForecastStatus.RUNNING;
+
+    case ForecastStatus.Completed:
+      return PrismaForecastStatus.COMPLETED;
+
+    case ForecastStatus.Failed:
+      return PrismaForecastStatus.FAILED;
+  }
+};
+
+const toDomainForecastStatus = (
+  status: PrismaForecastStatus,
+): ForecastStatus => {
+  switch (status) {
+    case PrismaForecastStatus.PENDING:
+      return ForecastStatus.Pending;
+
+    case PrismaForecastStatus.RUNNING:
+      return ForecastStatus.Running;
+
+    case PrismaForecastStatus.COMPLETED:
+      return ForecastStatus.Completed;
+
+    case PrismaForecastStatus.FAILED:
+      return ForecastStatus.Failed;
+  }
+};
 export class PrismaForecastRepository
   implements
     ForecastPersistence,
@@ -358,12 +443,28 @@ export class PrismaForecastRepository
 
   async findHistory(
     input: FindForecastHistoryInput,
-  ): Promise<readonly ForecastSnapshot[]> {
+  ): Promise<readonly ForecastHistoryItem[]> {
     const forecasts = await prisma.forecast.findMany({
       where: {
-        entityId: input.entityId,
-        forecastType: toPrismaForecastType(input.forecastType),
+        ...(input.entityId
+          ? {
+              entityId: input.entityId,
+            }
+          : {}),
+
+        ...(input.forecastType
+          ? {
+              forecastType: toPrismaForecastType(input.forecastType),
+            }
+          : {}),
+
+        ...(input.status
+          ? {
+              status: toPrismaForecastStatus(input.status),
+            }
+          : {}),
       },
+
       orderBy: [
         {
           createdAt: "desc",
@@ -372,9 +473,10 @@ export class PrismaForecastRepository
           id: "desc",
         },
       ],
-      include: forecastSnapshotInclude,
+
+      include: forecastHistoryInclude,
     });
 
-    return forecasts.map(toForecastSnapshot);
+    return forecasts.map(toForecastHistoryItem);
   }
 }

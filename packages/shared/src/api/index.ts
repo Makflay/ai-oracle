@@ -14,3 +14,10 @@ export type {
   DeveloperInterestForecastDto,
   DeveloperInterestRefreshDto,
 } from "./developer-interest-forecast.js";
+
+export { ForecastHistoryApiErrorCode } from "./forecast-history.js";
+
+export type {
+  ForecastHistoryItemDto,
+  ForecastHistoryOutcomeDto,
+} from "./forecast-history.js";

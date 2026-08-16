@@ -17,3 +17,8 @@ export type {
   FindForecastHistoryInput,
   ForecastHistoryRepository,
 } from "./forecast-history.repository.js";
+
+export type {
+  ForecastHistoryItem,
+  ForecastHistoryOutcome,
+} from "./forecast-history.types.js";

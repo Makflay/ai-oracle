@@ -50,6 +50,8 @@ export type {
   CurrentForecastOutcome,
   FindForecastHistoryInput,
   ForecastHistoryRepository,
+  ForecastHistoryItem,
+  ForecastHistoryOutcome,
 } from "./queries/index.js";
 
 export {
@@ -80,4 +82,7 @@ export {
   DeveloperInterestController,
   createDeveloperInterestRouter,
   toDeveloperInterestForecastDto,
+  createForecastHistoryController,
+  createForecastHistoryRouter,
+  toForecastHistoryItemDto,
 } from "./api/index.js";

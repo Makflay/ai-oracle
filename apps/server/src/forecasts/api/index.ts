@@ -13,3 +13,9 @@ export type { DeveloperInterestControllerDependencies } from "./developer-intere
 export { createDeveloperInterestRouter } from "./developer-interest-forecast.router.js";
 
 export { toDeveloperInterestForecastDto } from "./developer-interest-forecast.mapper.js";
+
+export { createForecastHistoryController } from "./forecast-history.controller.js";
+
+export { createForecastHistoryRouter } from "./forecast-history.router.js";
+
+export { toForecastHistoryItemDto } from "./forecast-history.mapper.js";

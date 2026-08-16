@@ -45,6 +45,7 @@ export type {
 export {
   ProjectForecastApiErrorCode,
   DeveloperInterestApiErrorCode,
+  ForecastHistoryApiErrorCode,
 } from "./api/index.js";
 
 export type {
@@ -55,4 +56,6 @@ export type {
   ProjectForecastRiskReasonDto,
   DeveloperInterestForecastDto,
   DeveloperInterestRefreshDto,
+  ForecastHistoryItemDto,
+  ForecastHistoryOutcomeDto,
 } from "./api/index.js";
