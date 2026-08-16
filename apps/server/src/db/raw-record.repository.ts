@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 
 import type {
   RawIngestionPersistence,
@@ -9,6 +9,7 @@ import type { Prisma } from "../generated/prisma/client.js";
 import { prisma } from "./client.js";
 
 interface PreparedRawRecord {
+  readonly id: string;
   readonly sourceId: string;
   readonly sourceKey: string;
   readonly entityId: string;
@@ -33,24 +34,14 @@ export class PrismaRawRecordRepository implements RawIngestionPersistence {
     const preparedRecords = await this.prepareRecords(records);
 
     const result = await prisma.rawRecord.createMany({
-      data: [...preparedRecords],
-      skipDuplicates: true,
-    });
-
-    const persistedRecords = await prisma.rawRecord.findMany({
-      where: {
-        OR: preparedRecords.map((record) => ({
-          sourceId: record.sourceId,
-          checksum: record.checksum,
-        })),
-      },
-      include: {
-        source: {
-          select: {
-            key: true,
-          },
-        },
-      },
+      data: preparedRecords.map((record) => ({
+        id: record.id,
+        sourceId: record.sourceId,
+        entityId: record.entityId,
+        checksum: record.checksum,
+        observedAt: record.observedAt,
+        payload: record.payload,
+      })),
     });
 
     return {
@@ -58,14 +49,14 @@ export class PrismaRawRecordRepository implements RawIngestionPersistence {
       createdCount: result.count,
       duplicateCount: records.length - result.count,
 
-      records: persistedRecords.map((record) => {
+      records: preparedRecords.map((record) => {
         if (!record.entityId) {
           throw new Error(`RawRecord "${record.id}" has no entityId`);
         }
 
         return {
           id: record.id,
-          sourceKey: record.source.key,
+          sourceKey: record.sourceKey,
           entityId: record.entityId,
           payload: record.payload,
           recordedAt: record.observedAt,
@@ -140,6 +131,7 @@ export class PrismaRawRecordRepository implements RawIngestionPersistence {
       const canonicalPayload = this.serializePayload(record.payload);
 
       return {
+        id: randomUUID(),
         sourceId: source.id,
         sourceKey: record.source,
         entityId,

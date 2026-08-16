@@ -110,7 +110,7 @@ model RawRecord {
   entity Entity? @relation(fields: [entityId], references: [id], onDelete: Restrict)
   metrics Metric[]
 
-  @@unique([sourceId, checksum])
+  @@index([sourceId, checksum])
   @@index([sourceId, observedAt])
   @@index([sourceId, externalId])
   @@index([entityId, observedAt])
