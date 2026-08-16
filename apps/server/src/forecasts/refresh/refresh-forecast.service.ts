@@ -21,9 +21,9 @@ import type {
   RefreshForecastResult,
 } from "./refresh-forecast.types.js";
 
-import { FORECAST_REFRESH_COOLDOWN_MS } from "./refresh-forecast.constants.js";
+import type { EntityRepository } from "../../entities/index.js";
 
-import type { ForecastEntityRepository } from "./forecast-entity.repository.js";
+import { FORECAST_REFRESH_COOLDOWN_MS } from "./refresh-forecast.constants.js";
 
 import { HISTORICAL_LOOKBACK_DAYS } from "../calculations/index.js";
 
@@ -31,7 +31,7 @@ const DAY_MS = 24 * 60 * 60 * 1_000;
 
 export class RefreshForecastService {
   constructor(
-    private readonly entities: ForecastEntityRepository,
+    private readonly entities: EntityRepository,
     private readonly ingestion: RawIngestionOrchestrator,
     private readonly metrics: MetricProcessingService,
     private readonly metricHistory: MetricHistoryRepository,

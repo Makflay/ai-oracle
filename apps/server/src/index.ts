@@ -4,11 +4,7 @@ import { createApplicationDependencies } from "./bootstrap.js";
 
 import { config } from "./config/index.js";
 
-import {
-  createEntityRouter,
-  EntityService,
-  PrismaEntityRepository,
-} from "./entities/index.js";
+import { createEntityRouter } from "./entities/index.js";
 
 import {
   createDeveloperInterestRouter,

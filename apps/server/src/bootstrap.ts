@@ -40,7 +40,6 @@ import {
 import { EntityService, PrismaEntityRepository } from "./entities/index.js";
 
 import {
-  PrismaForecastEntityRepository,
   PrismaForecastRepository,
   PrismaMetricRepository,
   PrismaRawRecordRepository,
@@ -190,10 +189,8 @@ export const createApplicationDependencies = (): ApplicationDependencies => {
 
   const forecastHistoryService = new ForecastHistoryService(forecastRepository);
 
-  const forecastEntityRepository = new PrismaForecastEntityRepository();
-
   const refreshForecastService = new RefreshForecastService(
-    forecastEntityRepository,
+    entityRepository,
     rawIngestionOrchestrator,
     metricProcessingService,
     metricRepository,
