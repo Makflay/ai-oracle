@@ -1,7 +1,7 @@
 import type {
   ForecastStatus,
   ForecastType,
-  PredictionDirection,
+  EvaluationStatus,
   RiskLevel,
 } from "../domain/index.js";
 
@@ -11,10 +11,10 @@ export enum ForecastHistoryApiErrorCode {
 }
 
 export interface ForecastHistoryOutcomeDto {
-  actualDirection: PredictionDirection;
+  expectedValue: number;
   actualValue: number | null;
-  accuracyScore: number | null;
-  observedAt: string;
+  status: EvaluationStatus;
+  evaluatedAt: string;
 }
 
 export interface ForecastHistoryItemDto {

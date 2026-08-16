@@ -3,6 +3,7 @@ import type {
   MetricType,
   PredictionDirection,
   RiskLevel,
+  EvaluationStatus,
 } from "../domain/index.js";
 
 export enum ProjectForecastApiErrorCode {
@@ -34,10 +35,10 @@ export interface ProjectForecastFactorDto {
 }
 
 export interface ProjectForecastOutcomeDto {
-  actualDirection: PredictionDirection;
-  actualValue: number | null;
-  accuracyScore: number | null;
-  observedAt: string;
+  expectedValue: number;
+  actualValue: number;
+  status: EvaluationStatus;
+  evaluatedAt: string;
 }
 
 export interface ProjectForecastDto {

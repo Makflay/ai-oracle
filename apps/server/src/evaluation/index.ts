@@ -14,10 +14,7 @@ export {
   IncompleteActualMetricsError,
 } from "./forecast-evaluation.errors.js";
 
-export {
-  EvaluationForecastKind,
-  EvaluationVerdict,
-} from "./forecast-evaluation.types.js";
+export { EvaluationForecastKind } from "./forecast-evaluation.types.js";
 
 export type {
   EvaluateForecastInput,
@@ -25,3 +22,13 @@ export type {
   EvaluationPrediction,
   ForecastEvaluationResult,
 } from "./forecast-evaluation.types.js";
+
+export { ForecastOutcomeService } from "./forecast-outcome.service.js";
+
+export { ForecastOutcomeAlreadyExistsError } from "./forecast-outcome.errors.js";
+
+export type {
+  CreateForecastOutcome,
+  ForecastOutcomePersistence,
+  StoredForecastOutcome,
+} from "./forecast-outcome.persistence.js";

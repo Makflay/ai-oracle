@@ -3,6 +3,7 @@ import type {
   MetricType,
   PredictionDirection,
   RiskLevel,
+  EvaluationStatus,
 } from "@ai-oracle/shared";
 
 import type { ForecastExplainabilityMetadata } from "../persistence/index.js";
@@ -26,10 +27,10 @@ export interface CurrentForecastFactor {
 export interface CurrentForecastOutcome {
   id: string;
   forecastId: string;
-  actualDirection: PredictionDirection;
-  actualValue: number | null;
-  accuracyScore: number | null;
-  observedAt: Date;
+  actualValue: number;
+  expectedValue: number;
+  status: EvaluationStatus;
+  evaluatedAt: Date;
   createdAt: Date;
 }
 

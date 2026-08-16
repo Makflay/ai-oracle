@@ -28,6 +28,7 @@ export {
   RiskLevel,
   DeveloperInterestPrediction,
   ProjectPopularityPrediction,
+  EvaluationStatus,
 } from "./domain/index.js";
 
 export type {

@@ -35,10 +35,10 @@ export const toProjectForecastDto = (
   })),
   outcome: forecast.outcome
     ? {
-        actualDirection: forecast.outcome.actualDirection,
         actualValue: forecast.outcome.actualValue,
-        accuracyScore: forecast.outcome.accuracyScore,
-        observedAt: forecast.outcome.observedAt.toISOString(),
+        expectedValue: forecast.outcome.expectedValue,
+        status: forecast.outcome.status,
+        evaluatedAt: forecast.outcome.evaluatedAt.toISOString(),
       }
     : null,
 });

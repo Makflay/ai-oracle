@@ -52,3 +52,8 @@ export enum DeveloperInterestPrediction {
   Medium = "MEDIUM",
   Low = "LOW",
 }
+
+export enum EvaluationStatus {
+  Correct = "CORRECT",
+  Incorrect = "INCORRECT",
+}

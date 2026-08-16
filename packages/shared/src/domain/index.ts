@@ -8,6 +8,7 @@ export {
   RiskLevel,
   DeveloperInterestPrediction,
   ProjectPopularityPrediction,
+  EvaluationStatus,
 } from "./enums.js";
 
 export type {

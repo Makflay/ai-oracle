@@ -3,6 +3,8 @@ import {
   ProjectPopularityPrediction,
 } from "@ai-oracle/shared";
 
+import { EvaluationStatus } from "@ai-oracle/shared";
+
 import {
   determineDeveloperInterestPrediction,
   determineProjectPopularityPrediction,
@@ -13,10 +15,7 @@ import {
   IncompleteActualMetricsError,
 } from "./forecast-evaluation.errors.js";
 
-import {
-  EvaluationForecastKind,
-  EvaluationVerdict,
-} from "./forecast-evaluation.types.js";
+import { EvaluationForecastKind } from "./forecast-evaluation.types.js";
 
 import type {
   EvaluateForecastInput,
@@ -111,10 +110,10 @@ export const evaluateForecast = (
   return {
     forecastId: forecast.id,
     kind,
-    verdict:
+    status:
       expectedPrediction === actualPrediction
-        ? EvaluationVerdict.Correct
-        : EvaluationVerdict.Incorrect,
+        ? EvaluationStatus.Correct
+        : EvaluationStatus.Incorrect,
     expectedPrediction,
     actualPrediction,
     predictedValue: roundToTwoDecimals(forecast.predictedValue),

@@ -5,6 +5,7 @@ import {
   MetricType as PrismaMetricType,
   PredictionDirection as PrismaPredictionDirection,
   ForecastStatus as PrismaForecastStatus,
+  EvaluationStatus as PrismaEvaluationStatus,
 } from "../generated/prisma/client.js";
 
 import {
@@ -13,6 +14,7 @@ import {
   MetricType,
   PredictionDirection,
   ForecastStatus,
+  EvaluationStatus,
 } from "@ai-oracle/shared";
 
 import { prisma } from "./client.js";
@@ -79,6 +81,18 @@ const toDomainRiskLevel = (risk: PrismaRiskLevel): RiskLevel => {
 
     case PrismaRiskLevel.HIGH:
       return RiskLevel.High;
+  }
+};
+
+const toDomainEvaluationStatus = (
+  status: PrismaEvaluationStatus,
+): EvaluationStatus => {
+  switch (status) {
+    case PrismaEvaluationStatus.CORRECT:
+      return EvaluationStatus.Correct;
+
+    case PrismaEvaluationStatus.INCORRECT:
+      return EvaluationStatus.Incorrect;
   }
 };
 
@@ -241,12 +255,10 @@ const toForecastSnapshot = (
     ? {
         id: forecast.outcome.id,
         forecastId: forecast.outcome.forecastId,
-        actualDirection: toDomainPredictionDirection(
-          forecast.outcome.actualDirection,
-        ),
+        expectedValue: forecast.outcome.expectedValue.toNumber(),
         actualValue: forecast.outcome.actualValue?.toNumber() ?? null,
-        accuracyScore: forecast.outcome.accuracyScore?.toNumber() ?? null,
-        observedAt: forecast.outcome.observedAt,
+        status: toDomainEvaluationStatus(forecast.outcome.status),
+        evaluatedAt: forecast.outcome.evaluatedAt,
         createdAt: forecast.outcome.createdAt,
       }
     : null,
@@ -287,12 +299,10 @@ const toForecastHistoryItem = (
       ? {
           id: forecast.outcome.id,
           forecastId: forecast.outcome.forecastId,
-          actualDirection: toDomainPredictionDirection(
-            forecast.outcome.actualDirection,
-          ),
+          expectedValue: forecast.outcome.expectedValue.toNumber(),
           actualValue: forecast.outcome.actualValue?.toNumber() ?? null,
-          accuracyScore: forecast.outcome.accuracyScore?.toNumber() ?? null,
-          observedAt: forecast.outcome.observedAt,
+          status: toDomainEvaluationStatus(forecast.outcome.status),
+          evaluatedAt: forecast.outcome.evaluatedAt,
           createdAt: forecast.outcome.createdAt,
         }
       : null,

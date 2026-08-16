@@ -1,16 +1,12 @@
 import type {
   DeveloperInterestPrediction,
   ProjectPopularityPrediction,
+  EvaluationStatus,
 } from "@ai-oracle/shared";
 
 import type { ActualMetricsResult } from "./actual-metrics.types.js";
 
 import type { DueForecastFactor } from "./due-forecast.types.js";
-
-export enum EvaluationVerdict {
-  Correct = "CORRECT",
-  Incorrect = "INCORRECT",
-}
 
 export enum EvaluationForecastKind {
   ProjectPopularity = "PROJECT_POPULARITY",
@@ -37,7 +33,7 @@ export type EvaluationPrediction =
 export interface ForecastEvaluationResult {
   readonly forecastId: string;
   readonly kind: EvaluationForecastKind;
-  readonly verdict: EvaluationVerdict;
+  readonly status: EvaluationStatus;
   readonly expectedPrediction: EvaluationPrediction;
   readonly actualPrediction: EvaluationPrediction;
   readonly predictedValue: number;

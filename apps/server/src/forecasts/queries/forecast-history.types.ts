@@ -1,17 +1,17 @@
 import type {
   ForecastStatus,
   ForecastType,
-  PredictionDirection,
   RiskLevel,
+  EvaluationStatus,
 } from "@ai-oracle/shared";
 
 export interface ForecastHistoryOutcome {
   id: string;
   forecastId: string;
-  actualDirection: PredictionDirection;
-  actualValue: number | null;
-  accuracyScore: number | null;
-  observedAt: Date;
+  actualValue: number;
+  expectedValue: number;
+  status: EvaluationStatus;
+  evaluatedAt: Date;
   createdAt: Date;
 }
 
