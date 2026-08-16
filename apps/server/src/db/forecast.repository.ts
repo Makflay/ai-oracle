@@ -364,6 +364,8 @@ export class PrismaForecastRepository
         predictedValue: new Prisma.Decimal(snapshot.predictedValue),
         targetAt: snapshot.targetAt,
         createdAt: snapshot.createdAt,
+        status: PrismaForecastStatus.COMPLETED,
+        completedAt: snapshot.createdAt,
         explainability:
           snapshot.explainability as unknown as Prisma.InputJsonValue,
         factors: {

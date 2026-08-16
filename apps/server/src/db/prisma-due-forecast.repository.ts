@@ -108,6 +108,7 @@ export class PrismaDueForecastRepository implements DueForecastRepository {
   async findDue(input: FindDueForecastsInput): Promise<readonly DueForecast[]> {
     const forecasts = await prisma.forecast.findMany({
       where: {
+        status: PrismaForecastStatus.COMPLETED,
         targetAt: {
           lte: input.dueAt,
         },
