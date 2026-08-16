@@ -30,10 +30,12 @@ import {
   createForecastStrategyRegistry,
 } from "./forecasts/index.js";
 
-import { ActualMetricsService } from "./evaluation/actual-metrics.service.js";
-import { DueForecastService } from "./evaluation/due-forecast.service.js";
-import { ForecastEvaluationService } from "./evaluation/forecast-evaluation.service.js";
-import { ForecastOutcomeService } from "./evaluation/forecast-outcome.service.js";
+import {
+  ActualMetricsService,
+  DueForecastService,
+  ForecastEvaluationService,
+  ForecastOutcomeService,
+} from "./evaluation/index.js";
 
 import { EntityService, PrismaEntityRepository } from "./entities/index.js";
 

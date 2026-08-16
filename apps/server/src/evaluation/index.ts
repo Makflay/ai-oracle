@@ -2,6 +2,16 @@ export { DueForecastService } from "./due-forecast.service.js";
 
 export type { DueForecast, DueForecastFactor } from "./due-forecast.types.js";
 
+export { ActualMetricsService } from "./actual-metrics.service.js";
+
+export type {
+  ActualForecastMetric,
+  ActualMetricsResult,
+  ActualMetricsTarget,
+  CollectActualMetricsInput,
+  MissingActualMetric,
+} from "./actual-metrics.types.js";
+
 export type {
   DueForecastRepository,
   FindDueForecastsInput,
@@ -22,6 +32,14 @@ export type {
   EvaluationPrediction,
   ForecastEvaluationResult,
 } from "./forecast-evaluation.types.js";
+
+export { ForecastEvaluationService } from "./forecast-evaluation.service.js";
+
+export type {
+  EvaluateDueForecastsInput,
+  EvaluateDueForecastsResult,
+  ForecastEvaluationFailure,
+} from "./forecast-evaluation.service.js";
 
 export { ForecastOutcomeService } from "./forecast-outcome.service.js";
 

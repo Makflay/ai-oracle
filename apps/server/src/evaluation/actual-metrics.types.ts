@@ -5,7 +5,7 @@ import type {
   RawIngestionOptions,
 } from "../ingestion/index.js";
 
-import type { DueForecast, DueForecastFactor } from "./due-forecast.types.js";
+import type { DueForecastFactor } from "./due-forecast.types.js";
 
 export interface ActualForecastMetric {
   readonly forecastFactorId: string;
@@ -45,17 +45,4 @@ export interface ActualMetricsResult {
   readonly actualMetrics: readonly ActualForecastMetric[];
   readonly missingMetrics: readonly MissingActualMetric[];
   readonly ingestionFailures: readonly RawIngestionFailure[];
-}
-
-export interface ActualMetricsTarget {
-  readonly forecastId: string;
-  readonly entityId: string;
-  readonly entitySlug: string;
-  readonly targetAt: Date;
-  readonly factors: readonly DueForecastFactor[];
-}
-
-export interface CollectActualMetricsInput {
-  readonly target: ActualMetricsTarget;
-  readonly ingestionOptions?: RawIngestionOptions;
 }
