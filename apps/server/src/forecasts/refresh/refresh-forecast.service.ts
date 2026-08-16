@@ -27,6 +27,8 @@ import { FORECAST_REFRESH_COOLDOWN_MS } from "./refresh-forecast.constants.js";
 
 import { HISTORICAL_LOOKBACK_DAYS } from "../calculations/index.js";
 
+import { ForecastUpstreamUnavailableError } from "./forecast-refresh.errors.js";
+
 const DAY_MS = 24 * 60 * 60 * 1_000;
 
 export class RefreshForecastService {
@@ -140,6 +142,9 @@ export class RefreshForecastService {
     );
 
     if (ingestionResult.persistence.records.length === 0) {
+      if (ingestionResult.failures.length > 0) {
+        throw new ForecastUpstreamUnavailableError(ingestionResult.failures);
+      }
       throw new Error(`No raw records available for entity "${entitySlug}"`);
     }
 

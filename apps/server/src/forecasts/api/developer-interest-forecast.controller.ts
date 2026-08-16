@@ -13,7 +13,7 @@ import type {
   DeveloperInterestRefreshDto,
 } from "@ai-oracle/shared";
 
-import type { RequestHandler, Response } from "express";
+import type { RequestHandler, Response, Request, NextFunction } from "express";
 
 import type { EntityService } from "../../entities/index.js";
 
@@ -22,6 +22,8 @@ import type { CurrentForecastService } from "../queries/index.js";
 import type { RefreshForecastService } from "../refresh/index.js";
 
 import { toDeveloperInterestForecastDto } from "./developer-interest-forecast.mapper.js";
+
+import { ForecastUpstreamUnavailableError } from "../refresh/index.js";
 
 const DEVELOPER_INTEREST_ENTITY_SLUG = "ai-developer-interest";
 
@@ -56,10 +58,11 @@ export class DeveloperInterestController {
   ) {}
 
   getCurrent: RequestHandler = async (
-    _request,
+    _request: Request,
     response: Response<
       ApiSuccessResponse<DeveloperInterestForecastDto> | ErrorResponse
     >,
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const entity = await this.dependencies.entityService.getEntityBySlug(
@@ -99,13 +102,8 @@ export class DeveloperInterestController {
         status: ApiStatus.Success,
         data: toDeveloperInterestForecastDto(forecast),
       });
-    } catch {
-      sendError(
-        response,
-        500,
-        DeveloperInterestApiErrorCode.InternalError,
-        "Unable to load developer interest forecast",
-      );
+    } catch (error: unknown) {
+      next(error);
     }
   };
 
@@ -114,6 +112,7 @@ export class DeveloperInterestController {
     response: Response<
       ApiSuccessResponse<DeveloperInterestRefreshDto> | ErrorResponse
     >,
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const entity = await this.dependencies.entityService.getEntityBySlug(
@@ -146,13 +145,23 @@ export class DeveloperInterestController {
           refreshed: result.refreshed,
         },
       });
-    } catch {
-      sendError(
-        response,
-        502,
-        DeveloperInterestApiErrorCode.RefreshFailed,
-        "Unable to refresh developer interest forecast",
-      );
+    } catch (error: unknown) {
+      if (error instanceof ForecastUpstreamUnavailableError) {
+        console.error(
+          "Developer interest refresh failed because upstream sources are unavailable",
+          error,
+        );
+
+        sendError(
+          response,
+          502,
+          DeveloperInterestApiErrorCode.RefreshFailed,
+          "Unable to refresh developer interest forecast",
+        );
+
+        return;
+      }
+      next(error);
     }
   };
 }

@@ -13,7 +13,7 @@ import type {
   ForecastHistoryItemDto,
 } from "@ai-oracle/shared";
 
-import type { RequestHandler, Response } from "express";
+import type { RequestHandler, Response, NextFunction } from "express";
 
 import { z } from "zod";
 
@@ -39,6 +39,7 @@ export const createForecastHistoryController = (
       | ApiSuccessResponse<readonly ForecastHistoryItemDto[]>
       | HistoryErrorResponse
     >,
+    next: NextFunction,
   ): Promise<void> => {
     const query = historyQuerySchema.safeParse(request.query);
 
@@ -61,14 +62,8 @@ export const createForecastHistoryController = (
         status: ApiStatus.Success,
         data: history.map(toForecastHistoryItemDto),
       });
-    } catch {
-      response.status(500).json({
-        status: ApiStatus.Error,
-        error: {
-          code: ForecastHistoryApiErrorCode.InternalError,
-          message: "Unable to load forecast history",
-        },
-      });
+    } catch (error: unknown) {
+      next(error);
     }
   };
 };

@@ -12,6 +12,8 @@ import {
   createProjectForecastRouter,
 } from "./forecasts/index.js";
 
+import { apiErrorHandler } from "./common/api-error.middleware.js";
+
 const app = express();
 
 const {
@@ -44,5 +46,7 @@ app.use(
 );
 
 app.use("/api/forecasts", createForecastHistoryRouter(forecastHistoryService));
+
+app.use(apiErrorHandler);
 
 app.listen(config.port);

@@ -13,7 +13,7 @@ import type {
   ProjectForecastRefreshDto,
 } from "@ai-oracle/shared";
 
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 
 import { z } from "zod";
 
@@ -24,6 +24,8 @@ import type { CurrentForecastService } from "../queries/index.js";
 import type { RefreshForecastService } from "../refresh/index.js";
 
 import { toProjectForecastDto } from "./project-forecast.mapper.js";
+
+import { ForecastUpstreamUnavailableError } from "../refresh/index.js";
 
 const entityIdSchema = z.uuid();
 
@@ -60,6 +62,7 @@ export class ProjectForecastController {
   getCurrent = async (
     request: Request<{ id: string }>,
     response: Response<ApiSuccessResponse<ProjectForecastDto> | ErrorResponse>,
+    next: NextFunction,
   ): Promise<void> => {
     const entityId = entityIdSchema.safeParse(request.params.id);
 
@@ -123,13 +126,8 @@ export class ProjectForecastController {
         status: ApiStatus.Success,
         data: toProjectForecastDto(forecast),
       });
-    } catch {
-      sendError(
-        response,
-        500,
-        ProjectForecastApiErrorCode.InternalError,
-        "Unable to load project forecast",
-      );
+    } catch (error: unknown) {
+      next(error);
     }
   };
 
@@ -138,6 +136,7 @@ export class ProjectForecastController {
     response: Response<
       ApiSuccessResponse<ProjectForecastRefreshDto> | ErrorResponse
     >,
+    next: NextFunction,
   ): Promise<void> => {
     const entityId = entityIdSchema.safeParse(request.params.id);
 
@@ -194,13 +193,23 @@ export class ProjectForecastController {
           refreshed: result.refreshed,
         },
       });
-    } catch {
-      sendError(
-        response,
-        502,
-        ProjectForecastApiErrorCode.RefreshFailed,
-        "Unable to refresh project forecast",
-      );
+    } catch (error: unknown) {
+      if (error instanceof ForecastUpstreamUnavailableError) {
+        console.error(
+          "Project forecast refresh failed because upstream sources are unavailable",
+          error,
+        );
+
+        sendError(
+          response,
+          502,
+          ProjectForecastApiErrorCode.RefreshFailed,
+          "Unable to refresh project forecast",
+        );
+
+        return;
+      }
+      next(error);
     }
   };
 }
