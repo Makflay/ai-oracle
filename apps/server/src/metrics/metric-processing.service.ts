@@ -1,11 +1,15 @@
 import type { MetricExtractor } from "./extractors/index.js";
-import { normalizeMetrics } from "./normalization/index.js";
+import { normalizeMetric } from "./normalization/index.js";
 import type {
   MetricPersistence,
   MetricPersistenceRecord,
   MetricPersistenceResult,
 } from "./persistence/index.js";
 import type { MetricSourceRecord } from "./metric-processing.types.js";
+import {
+  aggregateMetricObservations,
+  createMetricObservations,
+} from "./metric-aggregation.js";
 
 export class MetricProcessingService {
   private readonly extractorBySource: ReadonlyMap<string, MetricExtractor>;
@@ -20,14 +24,33 @@ export class MetricProcessingService {
   async process(
     records: readonly MetricSourceRecord[],
   ): Promise<MetricPersistenceResult> {
-    const metrics = records.flatMap((record) => this.processRecord(record));
+    const observations = records.flatMap((record) =>
+      this.extractRecord(record),
+    );
+
+    const aggregatedObservations = aggregateMetricObservations(observations);
+
+    const metrics: readonly MetricPersistenceRecord[] =
+      aggregatedObservations.map((observation) => {
+        const normalized = normalizeMetric({
+          type: observation.type,
+          rawValue: observation.rawValue,
+        });
+
+        return {
+          rawRecordId: observation.rawRecordId,
+          entityId: observation.entityId,
+          metricType: normalized.type,
+          value: normalized.rawValue,
+          normalizedValue: normalized.normalizedValue,
+          recordedAt: observation.recordedAt,
+        };
+      });
 
     return this.persistence.save(metrics);
   }
 
-  private processRecord(
-    record: MetricSourceRecord,
-  ): readonly MetricPersistenceRecord[] {
+  private extractRecord(record: MetricSourceRecord) {
     const extractor = this.extractorBySource.get(record.sourceKey);
 
     if (!extractor) {
@@ -36,18 +59,7 @@ export class MetricProcessingService {
       );
     }
 
-    const extractedMetrics = extractor.extract(record.payload);
-
-    const normalizedMetrics = normalizeMetrics(extractedMetrics);
-
-    return normalizedMetrics.map((metric) => ({
-      rawRecordId: record.rawRecordId,
-      entityId: record.entityId,
-      metricType: metric.type,
-      value: metric.rawValue,
-      normalizedValue: metric.normalizedValue,
-      recordedAt: record.recordedAt,
-    }));
+    return createMetricObservations(record, extractor.extract(record.payload));
   }
 
   private createExtractorRegistry(
