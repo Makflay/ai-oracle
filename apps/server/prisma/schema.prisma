@@ -148,7 +148,7 @@ model Forecast {
   status         ForecastStatus       @default(PENDING)
   direction      PredictionDirection?
   riskLevel      RiskLevel?           @map("risk_level")
-  confidence     Decimal?             @db.Decimal(5, 4)
+  confidence     Decimal?             @db.Decimal(5, 2)
   risk           RiskLevel
   prediction     String
   predictedValue Decimal?             @map("predicted_value") @db.Decimal(24, 8)
