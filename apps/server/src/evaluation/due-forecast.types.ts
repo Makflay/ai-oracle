@@ -8,6 +8,7 @@ import type {
 export interface DueForecast {
   readonly id: string;
   readonly entityId: string;
+  readonly entitySlug: string;
   readonly forecastType: ForecastType;
   readonly status: ForecastStatus;
   readonly score: number;
@@ -17,6 +18,7 @@ export interface DueForecast {
   readonly predictedValue: number | null;
   readonly targetAt: Date;
   readonly createdAt: Date;
+  readonly factors: readonly DueForecastFactor[];
 }
 
 export interface DueForecastFactor {
@@ -25,8 +27,6 @@ export interface DueForecastFactor {
   readonly sourceKey: string;
   readonly metricType: MetricType;
   readonly position: number;
-  readonly entitySlug: string;
-  readonly factors: readonly DueForecastFactor[];
   readonly normalizedValue: number;
   readonly weight: number;
   readonly contribution: number;

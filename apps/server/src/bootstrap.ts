@@ -30,6 +30,11 @@ import {
   createForecastStrategyRegistry,
 } from "./forecasts/index.js";
 
+import { ActualMetricsService } from "./evaluation/actual-metrics.service.js";
+import { DueForecastService } from "./evaluation/due-forecast.service.js";
+import { ForecastEvaluationService } from "./evaluation/forecast-evaluation.service.js";
+import { ForecastOutcomeService } from "./evaluation/forecast-outcome.service.js";
+
 import { EntityService, PrismaEntityRepository } from "./entities/index.js";
 
 import {
@@ -37,6 +42,8 @@ import {
   PrismaForecastRepository,
   PrismaMetricRepository,
   PrismaRawRecordRepository,
+  PrismaDueForecastRepository,
+  PrismaForecastOutcomeRepository,
 } from "./db/index.js";
 
 interface ProjectSourceConfig {
@@ -136,6 +143,7 @@ export interface ApplicationDependencies {
   readonly currentForecastService: CurrentForecastService;
   readonly forecastHistoryService: ForecastHistoryService;
   readonly refreshForecastService: RefreshForecastService;
+  readonly forecastEvaluationService: ForecastEvaluationService;
 }
 
 export const createApplicationDependencies = (): ApplicationDependencies => {
@@ -192,10 +200,32 @@ export const createApplicationDependencies = (): ApplicationDependencies => {
     currentForecastService,
   );
 
+  const dueForecastRepository = new PrismaDueForecastRepository();
+
+  const dueForecastService = new DueForecastService(dueForecastRepository);
+
+  const actualMetricsService = new ActualMetricsService(
+    rawIngestionOrchestrator,
+    metricProcessingService,
+  );
+
+  const forecastOutcomeRepository = new PrismaForecastOutcomeRepository();
+
+  const forecastOutcomeService = new ForecastOutcomeService(
+    forecastOutcomeRepository,
+  );
+
+  const forecastEvaluationService = new ForecastEvaluationService(
+    dueForecastService,
+    actualMetricsService,
+    forecastOutcomeService,
+  );
+
   return {
     entityService,
     currentForecastService,
     forecastHistoryService,
     refreshForecastService,
+    forecastEvaluationService,
   };
 };
