@@ -18,6 +18,7 @@ import {
   setHistoryForecastType,
   setHistoryStatus,
 } from "../features/history/historySlice";
+import { ForecastOutcome } from "../features/forecasts/components/ForecastOutcome";
 
 import "./HistoryPage.css";
 
@@ -275,7 +276,8 @@ export function HistoryPage() {
                   <th scope="col">Score</th>
                   <th scope="col">Confidence</th>
                   <th scope="col">Target</th>
-                  <th scope="col">Status</th>
+                  <th scope="col">Forecast Status</th>
+                  <th scope="col">Outcome</th>
                   <th scope="col">
                     <span className="history-table__action-label">
                       Действие
@@ -334,6 +336,10 @@ export function HistoryPage() {
                         >
                           {statusLabels[item.status]}
                         </span>
+                      </td>
+
+                      <td>
+                        <ForecastOutcome outcome={item.outcome} compact />
                       </td>
 
                       <td>

@@ -16,6 +16,7 @@ import { FactorBreakdown } from "../features/forecasts/components/FactorBreakdow
 import { SourceDataFreshness } from "../features/forecasts/components/SourceDataFreshness";
 import { RiskExplanation } from "../features/forecasts/components/RiskExplanation";
 import { ForecastChangeSummary } from "../features/forecasts/components/ForecastChangeSummary";
+import { ForecastOutcome } from "../features/forecasts/components/ForecastOutcome";
 
 import "./ForecastPage.css";
 
@@ -397,6 +398,8 @@ export function ForecastPage() {
       ) : null}
 
       <ForecastDetails forecast={forecast} />
+
+      <ForecastOutcome outcome={forecast.outcome} />
 
       <RiskExplanation risk={forecast.risk} reason={forecast.riskReason} />
 
