@@ -8,6 +8,7 @@ import {
 } from "../features/forecasts/forecastSlice";
 
 import { DeveloperInterestHeroCard } from "../features/forecasts/components/DeveloperInterestHeroCard";
+import { ProjectForecastCard } from "../features/forecasts/components/ProjectForecastCard";
 
 import "./HomePage.css";
 
@@ -150,65 +151,15 @@ export function HomePage() {
 
         {projectEntities.length > 0 ? (
           <div className="project-forecast-grid">
-            {projectEntities.map((entity) => {
-              const forecast = projectForecasts[entity.id];
-              const loading = projectLoading[entity.id] ?? false;
-              const error = projectErrors[entity.id] ?? null;
-
-              return (
-                <article className="project-forecast" key={entity.id}>
-                  <header className="project-forecast__header">
-                    <div>
-                      <h3>{entity.name}</h3>
-
-                      {entity.symbol !== null ? <p>{entity.symbol}</p> : null}
-                    </div>
-
-                    <Link
-                      className="project-forecast__link"
-                      to={`/forecasts/${entity.id}`}
-                    >
-                      Подробнее
-                    </Link>
-                  </header>
-
-                  {loading && forecast === undefined ? (
-                    <StateContainer kind="loading">
-                      Загружаем прогноз…
-                    </StateContainer>
-                  ) : null}
-
-                  {error !== null ? (
-                    <StateContainer kind="error">{error}</StateContainer>
-                  ) : null}
-
-                  {!loading && error === null && forecast === undefined ? (
-                    <StateContainer kind="empty">
-                      Прогноз пока недоступен.
-                    </StateContainer>
-                  ) : null}
-
-                  {forecast !== undefined ? (
-                    <div className="project-forecast__summary">
-                      <div>
-                        <span>Прогноз</span>
-                        <strong>{forecast.prediction}</strong>
-                      </div>
-
-                      <div>
-                        <span>Score</span>
-                        <strong>{forecast.score}</strong>
-                      </div>
-
-                      <div>
-                        <span>Risk</span>
-                        <strong>{forecast.risk}</strong>
-                      </div>
-                    </div>
-                  ) : null}
-                </article>
-              );
-            })}
+            {projectEntities.map((entity) => (
+              <ProjectForecastCard
+                key={entity.id}
+                entity={entity}
+                forecast={projectForecasts[entity.id]}
+                loading={projectLoading[entity.id] ?? false}
+                error={projectErrors[entity.id] ?? null}
+              />
+            ))}
           </div>
         ) : null}
       </section>
