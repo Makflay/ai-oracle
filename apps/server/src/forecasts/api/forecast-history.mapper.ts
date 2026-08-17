@@ -17,6 +17,7 @@ export const toForecastHistoryItemDto = (
   summary: forecast.summary,
   targetAt: forecast.targetAt.toISOString(),
   createdAt: forecast.createdAt.toISOString(),
+  forecastKind: forecast.forecastKind,
   outcome: forecast.outcome
     ? {
         actualValue: forecast.outcome.actualValue,

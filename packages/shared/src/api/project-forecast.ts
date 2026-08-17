@@ -5,6 +5,7 @@ import type {
   RiskLevel,
   EvaluationStatus,
   ForecastKind,
+  ProjectPopularityPrediction,
 } from "../domain/index.js";
 
 export enum ProjectForecastApiErrorCode {
@@ -49,7 +50,7 @@ export interface ProjectForecastDto {
   score: number;
   confidence: number | null;
   risk: RiskLevel;
-  prediction: string;
+  prediction: ProjectPopularityPrediction;
   predictedValue: number | null;
   targetAt: string;
   createdAt: string;
