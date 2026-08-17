@@ -10,6 +10,7 @@ import { fetchEntities } from "../features/entities/entitiesSlice";
 import { fetchProjectForecast } from "../features/forecasts/forecastSlice";
 
 import { FactorBreakdown } from "../features/forecasts/components/FactorBreakdown";
+import { SourceDataFreshness } from "../features/forecasts/components/SourceDataFreshness";
 
 import "./ForecastPage.css";
 
@@ -310,6 +311,8 @@ export function ForecastPage() {
       </header>
 
       <ForecastDetails forecast={forecast} />
+
+      <SourceDataFreshness sourceData={forecast.sourceData} />
 
       <FactorBreakdown factors={forecast.factors} />
 
