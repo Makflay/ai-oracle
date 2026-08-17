@@ -6,11 +6,18 @@ import {
   ForecastKind,
   ForecastStatus,
   ProjectPopularityPrediction,
+  ForecastType,
 } from "@ai-oracle/shared";
 
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchEntities } from "../features/entities/entitiesSlice";
-import { fetchForecastHistory } from "../features/history/historySlice";
+import {
+  fetchForecastHistory,
+  resetHistoryFilters,
+  setHistoryEntityId,
+  setHistoryForecastType,
+  setHistoryStatus,
+} from "../features/history/historySlice";
 
 import "./HistoryPage.css";
 
@@ -31,6 +38,12 @@ const predictionLabels: Readonly<Record<string, string>> = {
   [DeveloperInterestPrediction.High]: "Высокий интерес",
   [DeveloperInterestPrediction.Medium]: "Умеренный интерес",
   [DeveloperInterestPrediction.Low]: "Низкий интерес",
+};
+
+const forecastTypeLabels: Record<ForecastType, string> = {
+  [ForecastType.ShortTerm]: "Short term",
+  [ForecastType.MediumTerm]: "Medium term",
+  [ForecastType.LongTerm]: "Long term",
 };
 
 const statusLabels: Record<ForecastStatus, string> = {
@@ -58,6 +71,20 @@ function formatPrediction(value: string): string {
   return predictionLabels[value] ?? value;
 }
 
+function parseForecastType(value: string): ForecastType | null {
+  return (
+    Object.values(ForecastType).find(
+      (forecastType) => forecastType === value,
+    ) ?? null
+  );
+}
+
+function parseForecastStatus(value: string): ForecastStatus | null {
+  return (
+    Object.values(ForecastStatus).find((status) => status === value) ?? null
+  );
+}
+
 export function HistoryPage() {
   const dispatch = useAppDispatch();
   const historyRequested = useRef(false);
@@ -67,6 +94,7 @@ export function HistoryPage() {
     items: history,
     loading: historyLoading,
     error: historyError,
+    filters,
   } = useAppSelector((state) => state.history);
 
   const entities = useAppSelector((state) => state.entities.items);
@@ -85,9 +113,38 @@ export function HistoryPage() {
     }
   }, [dispatch, entities.length]);
 
+  function reloadHistory(): void {
+    void dispatch(fetchForecastHistory());
+  }
+
+  function handleForecastTypeChange(value: string): void {
+    dispatch(setHistoryForecastType(parseForecastType(value)));
+    reloadHistory();
+  }
+
+  function handleStatusChange(value: string): void {
+    dispatch(setHistoryStatus(parseForecastStatus(value)));
+    reloadHistory();
+  }
+
+  function handleEntityChange(value: string): void {
+    dispatch(setHistoryEntityId(value || null));
+    reloadHistory();
+  }
+
+  function handleResetFilters(): void {
+    dispatch(resetHistoryFilters());
+    reloadHistory();
+  }
+
   const entityNames = new Map(
     entities.map((entity) => [entity.id, entity.name]),
   );
+
+  const hasActiveFilters =
+    filters.entityId !== null ||
+    filters.forecastType !== null ||
+    filters.status !== null;
 
   const initialLoading =
     (!historyRequested.current || historyLoading) && history.length === 0;
@@ -104,6 +161,68 @@ export function HistoryPage() {
           Сохранённые прогнозы AI-проектов и глобального Developer Interest.
         </p>
       </header>
+
+      <div className="history-filters" aria-label="Фильтры истории прогнозов">
+        <label className="history-filter">
+          <span>Forecast Type</span>
+
+          <select
+            value={filters.forecastType ?? ""}
+            onChange={(event) => handleForecastTypeChange(event.target.value)}
+          >
+            <option value="">All forecast types</option>
+
+            {Object.values(ForecastType).map((forecastType) => (
+              <option key={forecastType} value={forecastType}>
+                {forecastTypeLabels[forecastType]}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="history-filter">
+          <span>Status</span>
+
+          <select
+            value={filters.status ?? ""}
+            onChange={(event) => handleStatusChange(event.target.value)}
+          >
+            <option value="">All statuses</option>
+
+            {Object.values(ForecastStatus).map((status) => (
+              <option key={status} value={status}>
+                {statusLabels[status]}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="history-filter">
+          <span>Entity</span>
+
+          <select
+            value={filters.entityId ?? ""}
+            onChange={(event) => handleEntityChange(event.target.value)}
+          >
+            <option value="">All entities</option>
+
+            {entities.map((entity) => (
+              <option key={entity.id} value={entity.id}>
+                {entity.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <button
+          className="history-filters__reset"
+          type="button"
+          onClick={handleResetFilters}
+          disabled={!hasActiveFilters}
+        >
+          Reset filters
+        </button>
+      </div>
 
       {initialLoading ? (
         <div className="history-page__state" role="status" aria-busy="true">
@@ -128,7 +247,9 @@ export function HistoryPage() {
           className="history-page__state history-page__state--empty"
           role="status"
         >
-          История прогнозов пока пуста.
+          {hasActiveFilters
+            ? "По выбранным фильтрам прогнозы не найдены."
+            : "История прогнозов пока пуста."}
         </div>
       ) : null}
 
@@ -144,7 +265,7 @@ export function HistoryPage() {
             </div>
           ) : null}
 
-          <div className="history-table-container">
+          <div className="history-table-container" aria-busy={historyLoading}>
             <table className="history-table">
               <thead>
                 <tr>
