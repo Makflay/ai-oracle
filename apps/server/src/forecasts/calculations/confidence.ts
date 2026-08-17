@@ -31,6 +31,45 @@ export const FRESHNESS_THRESHOLDS = [
   },
 ] as const;
 
+export interface ForecastFreshnessWindowInput {
+  readonly observedAt: Date;
+  readonly asOf: Date;
+}
+
+export function isWithinForecastFreshnessWindow(
+  input: ForecastFreshnessWindowInput,
+): boolean {
+  const observedAtTime = input.observedAt.getTime();
+  const asOfTime = input.asOf.getTime();
+
+  if (Number.isNaN(observedAtTime) || Number.isNaN(asOfTime)) {
+    throw new InvalidForecastConfidenceInputError(
+      "Freshness window requires valid observation and asOf dates",
+    );
+  }
+
+  const ageMilliseconds = asOfTime - observedAtTime;
+
+  if (ageMilliseconds < 0) {
+    throw new InvalidForecastConfidenceInputError(
+      "Source observation cannot be after forecast asOf",
+    );
+  }
+
+  const maximumFreshnessThreshold = FRESHNESS_THRESHOLDS.at(-1);
+
+  if (!maximumFreshnessThreshold) {
+    throw new InvalidForecastConfidenceInputError(
+      "Forecast freshness thresholds are not configured",
+    );
+  }
+
+  return (
+    ageMilliseconds <=
+    maximumFreshnessThreshold.maximumAgeDays * MILLISECONDS_PER_DAY
+  );
+}
+
 export interface ForecastConfidenceInput {
   readonly metrics: readonly ForecastMetricInput[];
   readonly asOf: string;

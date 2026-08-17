@@ -1,4 +1,7 @@
-export { ProjectForecastApiErrorCode } from "./project-forecast.js";
+export {
+  ProjectForecastApiErrorCode,
+  SourceDataFreshnessStatus,
+} from "./project-forecast.js";
 
 export type {
   ProjectForecastDto,
@@ -6,6 +9,7 @@ export type {
   ProjectForecastOutcomeDto,
   ProjectForecastRefreshDto,
   ProjectForecastRiskReasonDto,
+  ProjectForecastSourceDataDto,
 } from "./project-forecast.js";
 
 export { DeveloperInterestApiErrorCode } from "./developer-interest-forecast.js";

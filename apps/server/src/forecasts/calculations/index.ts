@@ -17,11 +17,13 @@ export {
   FRESHNESS_THRESHOLDS,
   InvalidForecastConfidenceInputError,
   calculateForecastConfidence,
+  isWithinForecastFreshnessWindow,
 } from "./confidence.js";
 
 export type {
   ForecastConfidenceInput,
   ForecastConfidenceResult,
+  ForecastFreshnessWindowInput,
 } from "./confidence.js";
 
 export { calculateForecastRisk } from "./risk.js";

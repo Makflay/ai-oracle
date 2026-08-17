@@ -33,6 +33,7 @@ export {
   FRESHNESS_THRESHOLDS,
   InvalidForecastConfidenceInputError,
   calculateForecastConfidence,
+  isWithinForecastFreshnessWindow,
 } from "./calculations/index.js";
 
 export type {
@@ -56,6 +57,7 @@ export type {
   ForecastHistoryRepository,
   ForecastHistoryItem,
   ForecastHistoryOutcome,
+  CurrentForecastSourceData,
 } from "./queries/index.js";
 
 export {

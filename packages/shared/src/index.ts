@@ -48,6 +48,7 @@ export {
   ProjectForecastApiErrorCode,
   DeveloperInterestApiErrorCode,
   ForecastHistoryApiErrorCode,
+  SourceDataFreshnessStatus,
 } from "./api/index.js";
 
 export type {
@@ -60,4 +61,5 @@ export type {
   DeveloperInterestRefreshDto,
   ForecastHistoryItemDto,
   ForecastHistoryOutcomeDto,
+  ProjectForecastSourceDataDto,
 } from "./api/index.js";

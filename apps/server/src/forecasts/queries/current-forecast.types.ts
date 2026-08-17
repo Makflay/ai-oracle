@@ -5,6 +5,7 @@ import type {
   RiskLevel,
   EvaluationStatus,
   ForecastKind,
+  SourceDataFreshnessStatus,
 } from "@ai-oracle/shared";
 
 import type { ForecastExplainabilityMetadata } from "../persistence/index.js";
@@ -23,6 +24,12 @@ export interface CurrentForecastFactor {
   description: string;
   position: number;
   createdAt: Date;
+}
+
+export interface CurrentForecastSourceData {
+  sourceKey: string;
+  fetchedAt: Date;
+  freshnessStatus: SourceDataFreshnessStatus;
 }
 
 export interface CurrentForecastOutcome {
@@ -50,4 +57,5 @@ export interface ForecastSnapshot {
   factors: readonly CurrentForecastFactor[];
   outcome: CurrentForecastOutcome | null;
   forecastKind: ForecastKind;
+  sourceData: readonly CurrentForecastSourceData[];
 }

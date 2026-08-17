@@ -9,6 +9,7 @@ export type {
   ForecastSnapshot,
   CurrentForecastFactor,
   CurrentForecastOutcome,
+  CurrentForecastSourceData,
 } from "./current-forecast.types.js";
 
 export { ForecastHistoryService } from "./forecast-history.service.js";

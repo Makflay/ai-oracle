@@ -43,6 +43,17 @@ export interface ProjectForecastOutcomeDto {
   evaluatedAt: string;
 }
 
+export enum SourceDataFreshnessStatus {
+  Fresh = "FRESH",
+  Stale = "STALE",
+}
+
+export interface ProjectForecastSourceDataDto {
+  sourceKey: string;
+  fetchedAt: string;
+  freshnessStatus: SourceDataFreshnessStatus;
+}
+
 export interface ProjectForecastDto {
   id: string;
   entityId: string;
@@ -59,6 +70,7 @@ export interface ProjectForecastDto {
   factors: readonly ProjectForecastFactorDto[];
   outcome: ProjectForecastOutcomeDto | null;
   forecastKind: ForecastKind;
+  sourceData: readonly ProjectForecastSourceDataDto[];
 }
 
 export interface ProjectForecastRefreshDto {

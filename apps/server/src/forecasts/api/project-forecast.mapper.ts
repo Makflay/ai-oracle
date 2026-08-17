@@ -49,6 +49,11 @@ export const toProjectForecastDto = (
       description: factor.description,
       position: factor.position,
     })),
+    sourceData: forecast.sourceData.map((source) => ({
+      sourceKey: source.sourceKey,
+      fetchedAt: source.fetchedAt.toISOString(),
+      freshnessStatus: source.freshnessStatus,
+    })),
     outcome: forecast.outcome
       ? {
           actualValue: forecast.outcome.actualValue,

@@ -1,13 +1,9 @@
 import {
-  ForecastType as PrismaForecastType,
   Prisma,
-  RiskLevel as PrismaRiskLevel,
-  MetricType as PrismaMetricType,
-  PredictionDirection as PrismaPredictionDirection,
   ForecastStatus as PrismaForecastStatus,
-  EvaluationStatus as PrismaEvaluationStatus,
-  ForecastKind as PrismaForecastKind,
 } from "../generated/prisma/client.js";
+
+import { SourceDataFreshnessStatus } from "@ai-oracle/shared";
 
 import { prisma } from "./client.js";
 
@@ -39,12 +35,26 @@ import type {
   ForecastHistoryRepository,
   ForecastHistoryItem,
   StoredForecastFactorSnapshot,
-} from "../forecasts/index.ts";
+  CurrentForecastSourceData,
+} from "../forecasts/index.js";
+
+import { isWithinForecastFreshnessWindow } from "../forecasts/index.js";
 
 const forecastSnapshotInclude = {
   factors: {
     orderBy: {
       position: "asc",
+    },
+    include: {
+      metric: {
+        select: {
+          rawRecord: {
+            select: {
+              observedAt: true,
+            },
+          },
+        },
+      },
     },
   },
   outcome: true,
@@ -53,6 +63,49 @@ const forecastSnapshotInclude = {
 type PrismaForecastSnapshot = Prisma.ForecastGetPayload<{
   include: typeof forecastSnapshotInclude;
 }>;
+
+const toCurrentForecastSourceData = (
+  factors: PrismaForecastSnapshot["factors"],
+  asOf: Date,
+): readonly CurrentForecastSourceData[] => {
+  const oldestObservationBySource = new Map<string, Date>();
+
+  for (const factor of factors) {
+    const observedAt = factor.metric?.rawRecord?.observedAt;
+
+    if (!observedAt) {
+      throw new Error(
+        `Forecast factor "${factor.id}" has no source observation timestamp`,
+      );
+    }
+
+    const currentOldestObservation = oldestObservationBySource.get(
+      factor.sourceKey,
+    );
+
+    if (
+      !currentOldestObservation ||
+      observedAt.getTime() < currentOldestObservation.getTime()
+    ) {
+      oldestObservationBySource.set(factor.sourceKey, observedAt);
+    }
+  }
+
+  return [...oldestObservationBySource.entries()]
+    .sort(([leftSourceKey], [rightSourceKey]) =>
+      leftSourceKey.localeCompare(rightSourceKey),
+    )
+    .map(([sourceKey, fetchedAt]) => ({
+      sourceKey,
+      fetchedAt,
+      freshnessStatus: isWithinForecastFreshnessWindow({
+        observedAt: fetchedAt,
+        asOf,
+      })
+        ? SourceDataFreshnessStatus.Fresh
+        : SourceDataFreshnessStatus.Stale,
+    }));
+};
 
 const toForecastSnapshot = (
   forecast: PrismaForecastSnapshot,
@@ -87,6 +140,7 @@ const toForecastSnapshot = (
     position: factor.position,
     createdAt: factor.createdAt,
   })),
+  sourceData: toCurrentForecastSourceData(forecast.factors, forecast.createdAt),
   outcome: forecast.outcome
     ? {
         id: forecast.outcome.id,
