@@ -11,6 +11,7 @@ import { fetchProjectForecast } from "../features/forecasts/forecastSlice";
 
 import { FactorBreakdown } from "../features/forecasts/components/FactorBreakdown";
 import { SourceDataFreshness } from "../features/forecasts/components/SourceDataFreshness";
+import { RiskExplanation } from "../features/forecasts/components/RiskExplanation";
 
 import "./ForecastPage.css";
 
@@ -311,6 +312,8 @@ export function ForecastPage() {
       </header>
 
       <ForecastDetails forecast={forecast} />
+
+      <RiskExplanation risk={forecast.risk} reason={forecast.riskReason} />
 
       <SourceDataFreshness sourceData={forecast.sourceData} />
 
