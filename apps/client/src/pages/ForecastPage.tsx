@@ -7,7 +7,10 @@ import type { ProjectForecastDto } from "@ai-oracle/shared";
 
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchEntities } from "../features/entities/entitiesSlice";
-import { fetchProjectForecast } from "../features/forecasts/forecastSlice";
+import {
+  fetchProjectForecast,
+  refreshProjectForecast,
+} from "../features/forecasts/forecastSlice";
 
 import { FactorBreakdown } from "../features/forecasts/components/FactorBreakdown";
 import { SourceDataFreshness } from "../features/forecasts/components/SourceDataFreshness";
@@ -196,6 +199,18 @@ export function ForecastPage() {
       : (state.forecasts.projectNotFound[entityId] ?? false),
   );
 
+  const forecastRefreshing = useAppSelector((state) =>
+    entityId === undefined
+      ? false
+      : (state.forecasts.projectRefreshing[entityId] ?? false),
+  );
+
+  const forecastRefreshError = useAppSelector((state) =>
+    entityId === undefined
+      ? null
+      : (state.forecasts.projectRefreshErrors[entityId] ?? null),
+  );
+
   const entity = entities.find((item) => item.id === entityId);
 
   useEffect(() => {
@@ -225,6 +240,12 @@ export function ForecastPage() {
 
   const entitiesPending =
     entities.length === 0 && !entitiesLoading && entitiesError === null;
+
+  const handleRefresh = (): void => {
+    if (entityId !== undefined && !forecastRefreshing) {
+      void dispatch(refreshProjectForecast(entityId));
+    }
+  };
 
   if (entityId === undefined) {
     return (
@@ -302,14 +323,40 @@ export function ForecastPage() {
         <div>
           <p className="page__eyebrow">Project forecast</p>
           <h1>{entity.name}</h1>
-
           {entity.description !== null ? <p>{entity.description}</p> : null}
         </div>
 
-        {entity.symbol !== null ? (
-          <span className="forecast-details__symbol">{entity.symbol}</span>
-        ) : null}
+        <div className="forecast-details__actions">
+          {entity.symbol !== null ? (
+            <span className="forecast-details__symbol">{entity.symbol}</span>
+          ) : null}
+
+          <button
+            className="forecast-details__refresh"
+            type="button"
+            disabled={forecastRefreshing}
+            onClick={handleRefresh}
+          >
+            Refresh forecast
+          </button>
+        </div>
       </header>
+
+      {forecastRefreshing ? (
+        <div
+          className="forecast-details__updating"
+          role="status"
+          aria-live="polite"
+        >
+          Updating fresh data...
+        </div>
+      ) : null}
+
+      {forecastRefreshError !== null ? (
+        <div className="forecast-details__refresh-error" role="alert">
+          {forecastRefreshError}
+        </div>
+      ) : null}
 
       <ForecastDetails forecast={forecast} />
 

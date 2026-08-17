@@ -104,20 +104,33 @@ export const refreshProjectForecast = createAsyncThunk<
   ProjectForecastRefreshDto,
   string,
   {
+    state: {
+      forecasts: ForecastState;
+    };
     rejectValue: string;
   }
->("forecasts/refreshProjectForecast", async (entityId, { rejectWithValue }) => {
-  try {
-    return await requestProjectForecastRefresh(entityId);
-  } catch (error: unknown) {
-    return rejectWithValue(getErrorMessage(error));
-  }
-});
+>(
+  "forecasts/refreshProjectForecast",
+  async (entityId, { rejectWithValue }) => {
+    try {
+      return await requestProjectForecastRefresh(entityId);
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+  {
+    condition: (entityId, { getState }) =>
+      !(getState().forecasts.projectRefreshing[entityId] ?? false),
+  },
+);
 
 export const refreshDeveloperInterestForecast = createAsyncThunk<
   DeveloperInterestRefreshDto,
   void,
   {
+    state: {
+      forecasts: ForecastState;
+    };
     rejectValue: string;
   }
 >(
@@ -128,6 +141,10 @@ export const refreshDeveloperInterestForecast = createAsyncThunk<
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error));
     }
+  },
+  {
+    condition: (_, { getState }) =>
+      !getState().forecasts.developerInterestRefreshing,
   },
 );
 

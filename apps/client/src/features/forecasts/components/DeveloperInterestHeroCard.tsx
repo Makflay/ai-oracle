@@ -2,7 +2,8 @@ import { DeveloperInterestPrediction, RiskLevel } from "@ai-oracle/shared";
 
 import type { DeveloperInterestForecastDto } from "@ai-oracle/shared";
 
-import { useAppSelector } from "../../../app/hooks";
+import { useAppSelector, useAppDispatch } from "../../../app/hooks";
+import { refreshDeveloperInterestForecast } from "../forecastSlice";
 
 import "./DeveloperInterestHeroCard.css";
 
@@ -138,11 +139,20 @@ function HeroContent({ forecast }: HeroContentProps) {
 }
 
 export function DeveloperInterestHeroCard() {
+  const dispatch = useAppDispatch();
   const {
     developerInterest,
     developerInterestLoading,
     developerInterestError,
+    developerInterestRefreshing,
+    developerInterestRefreshError,
   } = useAppSelector((state) => state.forecasts);
+
+  const handleRefresh = (): void => {
+    if (!developerInterestRefreshing) {
+      void dispatch(refreshDeveloperInterestForecast());
+    }
+  };
 
   if (developerInterestLoading && developerInterest === null) {
     return (
@@ -211,9 +221,36 @@ export function DeveloperInterestHeroCard() {
       aria-labelledby="developer-interest-title"
     >
       <header className="developer-hero__header">
-        <p>Global forecast</p>
-        <h2 id="developer-interest-title">AI Developer Interest</h2>
+        <div>
+          <p>Global forecast</p>
+          <h2 id="developer-interest-title">AI Developer Interest</h2>
+        </div>
+
+        <button
+          className="developer-hero__refresh"
+          type="button"
+          disabled={developerInterestRefreshing}
+          onClick={handleRefresh}
+        >
+          Refresh forecast
+        </button>
       </header>
+
+      {developerInterestRefreshing ? (
+        <div
+          className="developer-hero__updating"
+          role="status"
+          aria-live="polite"
+        >
+          Updating fresh data...
+        </div>
+      ) : null}
+
+      {developerInterestRefreshError !== null ? (
+        <div className="developer-hero__refresh-error" role="alert">
+          {developerInterestRefreshError}
+        </div>
+      ) : null}
 
       <HeroContent forecast={developerInterest} />
     </section>
