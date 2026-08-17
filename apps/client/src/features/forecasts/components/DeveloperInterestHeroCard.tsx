@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { DeveloperInterestPrediction, RiskLevel } from "@ai-oracle/shared";
-
 import type { DeveloperInterestForecastDto } from "@ai-oracle/shared";
 
 import { useAppSelector, useAppDispatch } from "../../../app/hooks";
 import { refreshDeveloperInterestForecast } from "../forecastSlice";
+
+import { ForecastChangeSummary } from "./ForecastChangeSummary";
 
 import "./DeveloperInterestHeroCard.css";
 
@@ -36,6 +38,9 @@ function formatTargetDate(value: string): string {
 }
 
 function formatFreshness(value: string): string {
+  const dispatch = useAppDispatch();
+  const [previousForecast, setPreviousForecast] =
+    useState<DeveloperInterestForecastDto | null>(null);
   const createdAt = new Date(value);
   const createdAtTime = createdAt.getTime();
 
@@ -148,9 +153,28 @@ export function DeveloperInterestHeroCard() {
     developerInterestRefreshError,
   } = useAppSelector((state) => state.forecasts);
 
-  const handleRefresh = (): void => {
-    if (!developerInterestRefreshing) {
-      void dispatch(refreshDeveloperInterestForecast());
+  const [previousForecast, setPreviousForecast] =
+    useState<DeveloperInterestForecastDto | null>(null);
+
+  const handleRefresh = async (): Promise<void> => {
+    if (!developerInterestRefreshing || developerInterest === null) {
+      return;
+    }
+
+    const previous = developerInterest;
+
+    setPreviousForecast(null);
+
+    try {
+      const result = await dispatch(
+        refreshDeveloperInterestForecast(),
+      ).unwrap();
+
+      if (result.refreshed) {
+        setPreviousForecast(previous);
+      }
+    } catch {
+      // Refresh error is already stored and rendered by the Redux slice.
     }
   };
 
@@ -230,7 +254,9 @@ export function DeveloperInterestHeroCard() {
           className="developer-hero__refresh"
           type="button"
           disabled={developerInterestRefreshing}
-          onClick={handleRefresh}
+          onClick={() => {
+            void handleRefresh();
+          }}
         >
           Refresh forecast
         </button>
@@ -250,6 +276,17 @@ export function DeveloperInterestHeroCard() {
         <div className="developer-hero__refresh-error" role="alert">
           {developerInterestRefreshError}
         </div>
+      ) : null}
+
+      {previousForecast !== null ? (
+        <ForecastChangeSummary
+          previousScore={previousForecast.score}
+          currentScore={developerInterest.score}
+          previousConfidence={previousForecast.confidence}
+          currentConfidence={developerInterest.confidence}
+          previousPrediction={predictionLabels[previousForecast.prediction]}
+          currentPrediction={predictionLabels[developerInterest.prediction]}
+        />
       ) : null}
 
       <HeroContent forecast={developerInterest} />

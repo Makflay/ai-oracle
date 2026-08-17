@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { ProjectPopularityPrediction, RiskLevel } from "@ai-oracle/shared";
@@ -15,6 +15,7 @@ import {
 import { FactorBreakdown } from "../features/forecasts/components/FactorBreakdown";
 import { SourceDataFreshness } from "../features/forecasts/components/SourceDataFreshness";
 import { RiskExplanation } from "../features/forecasts/components/RiskExplanation";
+import { ForecastChangeSummary } from "../features/forecasts/components/ForecastChangeSummary";
 
 import "./ForecastPage.css";
 
@@ -93,6 +94,10 @@ interface ForecastDetailsProps {
 }
 
 function ForecastDetails({ forecast }: ForecastDetailsProps) {
+  const dispatch = useAppDispatch();
+  const [previousForecast, setPreviousForecast] =
+    useState<ProjectForecastDto | null>(null);
+
   return (
     <>
       <div className="forecast-details__overview">
@@ -166,9 +171,11 @@ function ForecastDetails({ forecast }: ForecastDetailsProps) {
 }
 
 export function ForecastPage() {
-  const { id: entityId } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
+  const [previousForecast, setPreviousForecast] =
+    useState<ProjectForecastDto | null>(null);
 
+  const { id: entityId } = useParams<{ id: string }>();
   const {
     items: entities,
     loading: entitiesLoading,
@@ -241,9 +248,27 @@ export function ForecastPage() {
   const entitiesPending =
     entities.length === 0 && !entitiesLoading && entitiesError === null;
 
-  const handleRefresh = (): void => {
-    if (entityId !== undefined && !forecastRefreshing) {
-      void dispatch(refreshProjectForecast(entityId));
+  const handleRefresh = async (): Promise<void> => {
+    if (
+      entityId === undefined ||
+      forecast === undefined ||
+      forecastRefreshing
+    ) {
+      return;
+    }
+
+    const previous = forecast;
+
+    setPreviousForecast(null);
+
+    try {
+      const result = await dispatch(refreshProjectForecast(entityId)).unwrap();
+
+      if (result.refreshed) {
+        setPreviousForecast(previous);
+      }
+    } catch {
+      // Refresh error is already stored and rendered by the Redux slice.
     }
   };
 
@@ -335,7 +360,9 @@ export function ForecastPage() {
             className="forecast-details__refresh"
             type="button"
             disabled={forecastRefreshing}
-            onClick={handleRefresh}
+            onClick={() => {
+              handleRefresh();
+            }}
           >
             Refresh forecast
           </button>
@@ -356,6 +383,17 @@ export function ForecastPage() {
         <div className="forecast-details__refresh-error" role="alert">
           {forecastRefreshError}
         </div>
+      ) : null}
+
+      {previousForecast !== null ? (
+        <ForecastChangeSummary
+          previousScore={previousForecast.score}
+          currentScore={forecast.score}
+          previousConfidence={previousForecast.confidence}
+          currentConfidence={forecast.confidence}
+          previousPrediction={predictionLabels[previousForecast.prediction]}
+          currentPrediction={predictionLabels[forecast.prediction]}
+        />
       ) : null}
 
       <ForecastDetails forecast={forecast} />
