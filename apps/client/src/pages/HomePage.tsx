@@ -8,6 +8,7 @@ import {
 
 import { DeveloperInterestHeroCard } from "../features/forecasts/components/DeveloperInterestHeroCard";
 import { ProjectForecastCard } from "../features/forecasts/components/ProjectForecastCard";
+import { EmptyState } from "../features/forecasts/components/EmptyState";
 
 import "./HomePage.css";
 
@@ -143,9 +144,20 @@ export function HomePage() {
         {!entitiesLoading &&
         entitiesError === null &&
         projectEntities.length === 0 ? (
-          <StateContainer kind="empty">
-            Доступные AI-проекты не найдены.
-          </StateContainer>
+          <EmptyState
+            title="AI-проекты пока не добавлены"
+            description="Backend не вернул ни одной project entity. Обновите список или вернитесь позже."
+            action={
+              <button
+                type="button"
+                onClick={() => {
+                  void dispatch(fetchEntities());
+                }}
+              >
+                Обновить список
+              </button>
+            }
+          />
         ) : null}
 
         {projectEntities.length > 0 ? (

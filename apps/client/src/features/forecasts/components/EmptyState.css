@@ -1,0 +1,81 @@
+.empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  border: 1px dashed var(--color-border);
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+.empty-state__content {
+  display: grid;
+  justify-items: center;
+  max-width: 560px;
+  gap: 0.5rem;
+}
+
+.empty-state__content h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.125rem;
+}
+
+.empty-state__content p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.empty-state__action {
+  display: flex;
+  justify-content: center;
+}
+
+.empty-state__action > a,
+.empty-state__action > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0.55rem 0.9rem;
+  color: var(--color-background);
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: 0.55rem;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.empty-state__action > a:hover,
+.empty-state__action > button:hover {
+  filter: brightness(1.08);
+}
+
+.empty-state__action > a:focus-visible,
+.empty-state__action > button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.empty-state--compact {
+  justify-items: start;
+  gap: 0.75rem;
+  padding: 1rem;
+  text-align: left;
+}
+
+.empty-state--compact .empty-state__content {
+  justify-items: start;
+}
+
+.empty-state--compact .empty-state__content h3 {
+  font-size: 0.95rem;
+}
+
+.empty-state--compact .empty-state__content p {
+  font-size: 0.875rem;
+}

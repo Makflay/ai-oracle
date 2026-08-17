@@ -4,6 +4,8 @@ import { ProjectPopularityPrediction, RiskLevel } from "@ai-oracle/shared";
 
 import type { ForecastEntity, ProjectForecastDto } from "@ai-oracle/shared";
 
+import { EmptyState } from "./EmptyState";
+
 import "./ProjectForecastCard.css";
 
 const predictionLabels: Record<ProjectPopularityPrediction, string> = {
@@ -117,12 +119,11 @@ export function ProjectForecastCard({
         ) : null}
 
         {!loading && error === null && forecast === undefined ? (
-          <div
-            className="project-card__state project-card__state--empty"
-            role="status"
-          >
-            Прогноз пока недоступен.
-          </div>
+          <EmptyState
+            compact
+            title="Текущий прогноз отсутствует"
+            description="Для этого проекта прогноз ещё не был создан."
+          />
         ) : null}
 
         {forecast !== undefined && error === null ? (

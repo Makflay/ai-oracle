@@ -1,5 +1,7 @@
 import type { ProjectForecastFactorDto } from "@ai-oracle/shared";
 
+import { EmptyState } from "./EmptyState";
+
 import "./FactorBreakdown.css";
 
 const numberFormatter = new Intl.NumberFormat("ru-RU", {
@@ -54,16 +56,20 @@ export function FactorBreakdown({ factors }: FactorBreakdownProps) {
           <h2 id="factor-breakdown-title">Factor Breakdown</h2>
         </div>
 
-        <div className="factor-breakdown__total">
-          <span>Сумма contributions</span>
-          <strong>{formatContribution(totalContribution)}</strong>
-        </div>
+        {factors.length > 0 ? (
+          <div className="factor-breakdown__total">
+            <span>Сумма contributions</span>
+            <strong>{formatContribution(totalContribution)}</strong>
+          </div>
+        ) : null}
       </header>
 
       {factors.length === 0 ? (
-        <div className="factor-breakdown__empty" role="status">
-          Факторы для этого прогноза отсутствуют.
-        </div>
+        <EmptyState
+          compact
+          title="Факторы отсутствуют"
+          description="Backend не вернул factor breakdown для этого прогноза. Попробуйте обновить прогноз доступной кнопкой Refresh forecast."
+        />
       ) : (
         <div className="factor-breakdown__table-container">
           <table className="factor-breakdown__table">

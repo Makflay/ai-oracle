@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { DeveloperInterestPrediction, RiskLevel } from "@ai-oracle/shared";
 import type { DeveloperInterestForecastDto } from "@ai-oracle/shared";
 
@@ -6,6 +7,7 @@ import { useAppSelector, useAppDispatch } from "../../../app/hooks";
 import { refreshDeveloperInterestForecast } from "../forecastSlice";
 
 import { ForecastChangeSummary } from "./ForecastChangeSummary";
+import { EmptyState } from "./EmptyState";
 
 import "./DeveloperInterestHeroCard.css";
 
@@ -229,12 +231,11 @@ export function DeveloperInterestHeroCard() {
           <h2 id="developer-interest-title">AI Developer Interest</h2>
         </header>
 
-        <div
-          className="developer-hero__state developer-hero__state--empty"
-          role="status"
-        >
-          Глобальный прогноз пока недоступен.
-        </div>
+        <EmptyState
+          title="Глобальный прогноз ещё не создан"
+          description="Текущий Developer Interest forecast отсутствует. Проверьте историю предыдущих прогнозов или вернитесь позже."
+          action={<Link to="/history">Открыть историю</Link>}
+        />
       </section>
     );
   }

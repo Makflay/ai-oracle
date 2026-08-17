@@ -19,6 +19,7 @@ import {
   setHistoryStatus,
 } from "../features/history/historySlice";
 import { ForecastOutcome } from "../features/forecasts/components/ForecastOutcome";
+import { EmptyState } from "../features/forecasts/components/EmptyState";
 
 import "./HistoryPage.css";
 
@@ -244,14 +245,22 @@ export function HistoryPage() {
       historyError === null &&
       historyRequested.current &&
       history.length === 0 ? (
-        <div
-          className="history-page__state history-page__state--empty"
-          role="status"
-        >
-          {hasActiveFilters
-            ? "По выбранным фильтрам прогнозы не найдены."
-            : "История прогнозов пока пуста."}
-        </div>
+        hasActiveFilters ? (
+          <EmptyState
+            title="Прогнозы не найдены"
+            description="В истории нет прогнозов, соответствующих выбранным фильтрам."
+            action={
+              <button type="button" onClick={handleResetFilters}>
+                Сбросить фильтры
+              </button>
+            }
+          />
+        ) : (
+          <EmptyState
+            title="История пока пуста"
+            description="Сохранённые прогнозы появятся здесь после первого запуска forecast pipeline."
+          />
+        )
       ) : null}
 
       {history.length > 0 ? (

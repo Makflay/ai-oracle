@@ -17,6 +17,7 @@ import { SourceDataFreshness } from "../features/forecasts/components/SourceData
 import { RiskExplanation } from "../features/forecasts/components/RiskExplanation";
 import { ForecastChangeSummary } from "../features/forecasts/components/ForecastChangeSummary";
 import { ForecastOutcome } from "../features/forecasts/components/ForecastOutcome";
+import { EmptyState } from "../features/forecasts/components/EmptyState";
 
 import "./ForecastPage.css";
 
@@ -273,14 +274,33 @@ export function ForecastPage() {
     }
   };
 
-  if (entityId === undefined) {
+  if (!entitiesLoading && entities.length > 0 && entityId === undefined) {
     return (
       <section className="forecast-page-state">
         <p className="page__eyebrow">Not found</p>
         <h1>Прогноз не найден</h1>
-        <p>В адресе страницы отсутствует идентификатор проекта.</p>
+        <p>AI-проект с указанным идентификатором не существует.</p>
         <Link className="text-link" to="/">
           Вернуться к прогнозам
+        </Link>
+      </section>
+    );
+  }
+
+  if (forecastNotFound && entity !== undefined) {
+    return (
+      <section className="forecast-page-state">
+        <p className="page__eyebrow">Project forecast</p>
+        <h1>{entity.name}</h1>
+
+        <EmptyState
+          title="Текущий прогноз ещё не создан"
+          description="Для этого проекта пока нет актуального прогноза. Можно проверить предыдущие результаты в истории."
+          action={<Link to="/history">Открыть историю</Link>}
+        />
+
+        <Link className="text-link" to="/">
+          ← Вернуться к прогнозам
         </Link>
       </section>
     );

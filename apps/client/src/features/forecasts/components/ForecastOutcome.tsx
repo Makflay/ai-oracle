@@ -5,6 +5,8 @@ import type {
   ProjectForecastOutcomeDto,
 } from "@ai-oracle/shared";
 
+import { EmptyState } from "../components/EmptyState";
+
 import "./ForecastOutcome.css";
 
 interface ForecastOutcomeProps {
@@ -61,22 +63,32 @@ export function ForecastOutcome({
               <p className="page__eyebrow">Forecast evaluation</p>
               <h2>Результат прогноза</h2>
             </div>
+
+            <span
+              className="forecast-outcome__status"
+              data-outcome-status="PENDING"
+            >
+              Pending
+            </span>
           </div>
-        ) : null}
+        ) : (
+          <span
+            className="forecast-outcome__status"
+            data-outcome-status="PENDING"
+          >
+            Pending
+          </span>
+        )}
 
-        <span
-          className="forecast-outcome__status"
-          data-outcome-status="PENDING"
-        >
-          Pending
-        </span>
-
-        {!compact ? (
-          <p className="forecast-outcome__pending-message">
-            Прогноз ещё не проверен. Результат появится после наступления
-            целевой даты и выполнения backend evaluation.
-          </p>
-        ) : null}
+        <EmptyState
+          compact
+          title="Прогноз ожидает проверки"
+          description={
+            compact
+              ? "Результат появится после target date."
+              : "Фактическое значение и результат проверки появятся после наступления target date и выполнения backend evaluation."
+          }
+        />
       </section>
     );
   }

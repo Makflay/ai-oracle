@@ -2,6 +2,8 @@ import { SourceDataFreshnessStatus } from "@ai-oracle/shared";
 
 import type { ProjectForecastSourceDataDto } from "@ai-oracle/shared";
 
+import { EmptyState } from "../components/EmptyState";
+
 import "./SourceDataFreshness.css";
 
 const sourceLabels: Readonly<Record<string, string>> = {
@@ -120,9 +122,11 @@ export function SourceDataFreshness({ sourceData }: SourceDataFreshnessProps) {
       </header>
 
       {orderedSourceData.length === 0 ? (
-        <div className="source-freshness__empty" role="status">
-          Информация об исходных данных отсутствует.
-        </div>
+        <EmptyState
+          compact
+          title="Данные об источниках отсутствуют"
+          description="Backend не вернул freshness metadata для этого прогноза. Попробуйте получить свежий прогноз кнопкой Refresh forecast."
+        />
       ) : (
         <div className="source-freshness__grid">
           {orderedSourceData.map((source) => (
