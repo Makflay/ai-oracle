@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchEntities } from "../features/entities/entitiesSlice";
 import {
   fetchDeveloperInterestForecast,
   fetchProjectForecast,
 } from "../features/forecasts/forecastSlice";
+
+import { DeveloperInterestHeroCard } from "../features/forecasts/components/DeveloperInterestHeroCard";
 
 import "./HomePage.css";
 
@@ -108,60 +109,10 @@ export function HomePage() {
       </header>
 
       <section
-        className="dashboard-section dashboard-section--featured"
+        className="dashboard-section"
         aria-labelledby="developer-interest-title"
       >
-        <div className="dashboard-section__header">
-          <div>
-            <p className="dashboard-section__eyebrow">Global forecast</p>
-            <h2 id="developer-interest-title">Developer Interest</h2>
-          </div>
-        </div>
-
-        {developerInterestLoading && developerInterest === null ? (
-          <StateContainer kind="loading">
-            Загружаем глобальный прогноз…
-          </StateContainer>
-        ) : null}
-
-        {developerInterestError !== null ? (
-          <StateContainer kind="error">{developerInterestError}</StateContainer>
-        ) : null}
-
-        {!developerInterestLoading &&
-        developerInterestError === null &&
-        developerInterest === null ? (
-          <StateContainer kind="empty">
-            Глобальный прогноз пока недоступен.
-          </StateContainer>
-        ) : null}
-
-        {developerInterest !== null ? (
-          <article className="forecast-summary forecast-summary--featured">
-            <div>
-              <p className="forecast-summary__label">Прогноз</p>
-              <p className="forecast-summary__prediction">
-                {developerInterest.prediction}
-              </p>
-            </div>
-
-            <dl className="forecast-summary__metrics">
-              <div>
-                <dt>Score</dt>
-                <dd>{developerInterest.score}</dd>
-              </div>
-
-              <div>
-                <dt>Confidence</dt>
-                <dd>
-                  {developerInterest.confidence === null
-                    ? "—"
-                    : `${developerInterest.confidence}%`}
-                </dd>
-              </div>
-            </dl>
-          </article>
-        ) : null}
+        <DeveloperInterestHeroCard />
       </section>
 
       <section
