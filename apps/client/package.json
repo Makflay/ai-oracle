@@ -10,9 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ai-oracle/shared": "*",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "@ai-oracle/shared": "*"
+    "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
