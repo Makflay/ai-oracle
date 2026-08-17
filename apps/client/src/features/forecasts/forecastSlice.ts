@@ -5,12 +5,22 @@ import type {
   ProjectForecastDto,
 } from "@ai-oracle/shared";
 
-import { getDeveloperInterestForecast, getProjectForecast } from "../../api";
+import {
+  getDeveloperInterestForecast,
+  getProjectForecast,
+  ApiClientError,
+} from "../../api";
+
+interface ProjectForecastRequestError {
+  message: string;
+  notFound: boolean;
+}
 
 export interface ForecastState {
   projectForecasts: Record<string, ProjectForecastDto>;
   projectLoading: Record<string, boolean>;
   projectErrors: Record<string, string | null>;
+  projectNotFound: Record<string, boolean>;
   developerInterest: DeveloperInterestForecastDto | null;
   developerInterestLoading: boolean;
   developerInterestError: string | null;
@@ -20,6 +30,7 @@ const initialState: ForecastState = {
   projectForecasts: {},
   projectLoading: {},
   projectErrors: {},
+  projectNotFound: {},
   developerInterest: null,
   developerInterestLoading: false,
   developerInterestError: null,
@@ -37,13 +48,16 @@ export const fetchProjectForecast = createAsyncThunk<
   ProjectForecastDto,
   string,
   {
-    rejectValue: string;
+    rejectValue: ProjectForecastRequestError;
   }
 >("forecasts/fetchProjectForecast", async (entityId, { rejectWithValue }) => {
   try {
     return await getProjectForecast(entityId);
   } catch (error: unknown) {
-    return rejectWithValue(getErrorMessage(error));
+    return rejectWithValue({
+      message: getErrorMessage(error),
+      notFound: error instanceof ApiClientError && error.statusCode === 404,
+    });
   }
 });
 
@@ -75,6 +89,7 @@ const forecastSlice = createSlice({
 
         state.projectLoading[entityId] = true;
         state.projectErrors[entityId] = null;
+        state.projectNotFound[entityId] = false;
       })
       .addCase(fetchProjectForecast.fulfilled, (state, action) => {
         const entityId = action.meta.arg;
@@ -93,6 +108,10 @@ const forecastSlice = createSlice({
             ...state.projectErrors,
             [entityId]: null,
           },
+          projectNotFound: {
+            ...state.projectNotFound,
+            [entityId]: false,
+          },
         };
       })
       .addCase(fetchProjectForecast.rejected, (state, action) => {
@@ -100,7 +119,8 @@ const forecastSlice = createSlice({
 
         state.projectLoading[entityId] = false;
         state.projectErrors[entityId] =
-          action.payload ?? "Unable to load project forecast";
+          action.payload?.message ?? "Unable to load project forecast";
+        state.projectNotFound[entityId] = action.payload?.notFound ?? false;
       })
       .addCase(fetchDeveloperInterestForecast.pending, (state) => {
         state.developerInterestLoading = true;
