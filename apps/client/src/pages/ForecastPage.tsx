@@ -9,6 +9,8 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchEntities } from "../features/entities/entitiesSlice";
 import { fetchProjectForecast } from "../features/forecasts/forecastSlice";
 
+import { FactorBreakdown } from "../features/forecasts/components/FactorBreakdown";
+
 import "./ForecastPage.css";
 
 const predictionLabels: Record<ProjectPopularityPrediction, string> = {
@@ -308,6 +310,8 @@ export function ForecastPage() {
       </header>
 
       <ForecastDetails forecast={forecast} />
+
+      <FactorBreakdown factors={forecast.factors} />
 
       <footer className="forecast-details__footer">
         <Link className="text-link" to="/">
