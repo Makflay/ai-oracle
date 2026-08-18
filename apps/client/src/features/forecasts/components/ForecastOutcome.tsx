@@ -15,8 +15,8 @@ interface ForecastOutcomeProps {
 }
 
 const outcomeLabels: Record<EvaluationStatus, string> = {
-  [EvaluationStatus.Correct]: "Correct",
-  [EvaluationStatus.Incorrect]: "Incorrect",
+  [EvaluationStatus.Correct]: "Верный",
+  [EvaluationStatus.Incorrect]: "Неверный",
 };
 
 const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
@@ -60,7 +60,7 @@ export function ForecastOutcome({
         {!compact ? (
           <div className="forecast-outcome__heading">
             <div>
-              <p className="page__eyebrow">Forecast evaluation</p>
+              <p className="page__eyebrow">Проверка прогноза</p>
               <h2>Результат прогноза</h2>
             </div>
 
@@ -68,7 +68,7 @@ export function ForecastOutcome({
               className="forecast-outcome__status"
               data-outcome-status="PENDING"
             >
-              Pending
+              Ожидает проверки
             </span>
           </div>
         ) : (
@@ -76,7 +76,7 @@ export function ForecastOutcome({
             className="forecast-outcome__status"
             data-outcome-status="PENDING"
           >
-            Pending
+            Ожидает проверки
           </span>
         )}
 
@@ -85,8 +85,8 @@ export function ForecastOutcome({
           title="Прогноз ожидает проверки"
           description={
             compact
-              ? "Результат появится после target date."
-              : "Фактическое значение и результат проверки появятся после наступления target date и выполнения backend evaluation."
+              ? "Результат появится после наступления целевой даты."
+              : "Фактическое значение и результат появятся после наступления целевой даты и проверки прогноза на сервере."
           }
         />
       </section>
@@ -103,7 +103,7 @@ export function ForecastOutcome({
       {!compact ? (
         <div className="forecast-outcome__heading">
           <div>
-            <p className="page__eyebrow">Forecast evaluation</p>
+            <p className="page__eyebrow">Проверка прогноза</p>
             <h2>Результат прогноза</h2>
           </div>
 
@@ -125,17 +125,17 @@ export function ForecastOutcome({
 
       <dl className="forecast-outcome__values">
         <div>
-          <dt>Expected</dt>
+          <dt>Ожидаемое значение</dt>
           <dd>{formatValue(outcome.expectedValue)}</dd>
         </div>
 
         <div>
-          <dt>Actual</dt>
+          <dt>Фактическое значение</dt>
           <dd>{formatValue(outcome.actualValue)}</dd>
         </div>
 
         <div>
-          <dt>Evaluated</dt>
+          <dt>Проверен</dt>
           <dd>
             <time dateTime={outcome.evaluatedAt}>
               {formatDate(outcome.evaluatedAt)}

@@ -1,7 +1,6 @@
-import type {
-  ProjectForecastRiskReasonDto,
-  RiskLevel,
-} from "@ai-oracle/shared";
+import type { ProjectForecastRiskReasonDto } from "@ai-oracle/shared";
+
+import { RiskLevel } from "@ai-oracle/shared";
 
 import "./RiskExplanation.css";
 
@@ -9,6 +8,12 @@ interface RiskExplanationProps {
   risk: RiskLevel;
   reason: ProjectForecastRiskReasonDto;
 }
+
+const riskLabels: Record<RiskLevel, string> = {
+  [RiskLevel.Low]: "НИЗКИЙ",
+  [RiskLevel.Medium]: "СРЕДНИЙ",
+  [RiskLevel.High]: "ВЫСОКИЙ",
+};
 
 export function RiskExplanation({ risk, reason }: RiskExplanationProps) {
   return (
@@ -19,8 +24,8 @@ export function RiskExplanation({ risk, reason }: RiskExplanationProps) {
     >
       <header className="risk-explanation__header">
         <div>
-          <p className="risk-explanation__eyebrow">Risk analysis</p>
-          <h2 id="risk-explanation-title">Risk Explanation</h2>
+          <p className="risk-explanation__eyebrow">Анализ риска</p>
+          <h2 id="risk-explanation-title">Объяснение риска</h2>
         </div>
 
         <span

@@ -106,10 +106,10 @@ export function HomePage() {
   return (
     <div className="dashboard">
       <header className="dashboard__header">
-        <p className="page__eyebrow">AI ecosystem outlook</p>
+        <p className="page__eyebrow">Прогноз развития AI-экосистемы</p>
         <h1>Прогнозы AI-экосистемы</h1>
         <p>
-          Объяснимые прогнозы Developer Interest и популярности AI-проектов на
+          Объяснимые прогнозы AI-разработчиков и популярности AI-проектов на
           ближайшие 14 дней.
         </p>
       </header>
@@ -127,7 +127,7 @@ export function HomePage() {
       >
         <div className="dashboard-section__header">
           <div>
-            <p className="dashboard-section__eyebrow">Project outlook</p>
+            <p className="dashboard-section__eyebrow">Количество прогнозов</p>
             <h2 id="project-forecasts-title">Прогнозы проектов</h2>
           </div>
 
@@ -171,7 +171,7 @@ export function HomePage() {
         projectEntities.length === 0 ? (
           <EmptyState
             title="AI-проекты пока не добавлены"
-            description="Backend не вернул ни одной project entity. Обновите список или вернитесь позже."
+            description="Сервер не вернул ни одного AI-проекта. Обновите список или вернитесь позже."
             action={
               <button
                 type="button"

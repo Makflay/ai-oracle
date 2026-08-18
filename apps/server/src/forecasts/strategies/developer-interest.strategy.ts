@@ -125,18 +125,18 @@ export class DeveloperInterestStrategy implements ForecastStrategy<DeveloperInte
     const riskReason = createForecastRiskReason(risk);
 
     const summary = trend.trendAvailable
-      ? `Current global AI developer interest index is ` +
-        `${index}/100. Historical baseline is ` +
-        `${trend.baselineValue}/100 over ` +
-        `${trend.actualHistorySpanDays} days. ` +
-        `Observed delta is ${trend.observedDelta}; ` +
-        `projected 14-day delta is ${trend.projectedDelta}. ` +
-        `Expected value at targetAt is ` +
+      ? `Текущий глобальный индекс интереса AI-разработчиков — ` +
+        `${index}/100. Историческое базовое значение — ` +
+        `${trend.baselineValue}/100 за период ` +
+        `${trend.actualHistorySpanDays} дн. ` +
+        `Наблюдаемое изменение — ${trend.observedDelta}; ` +
+        `прогнозируемое изменение за 14 дней — ${trend.projectedDelta}. ` +
+        `Ожидаемое значение на целевую дату — ` +
         `${trend.predictedValue}/100.`
-      : `Current global AI developer interest index is ` +
-        `${index}/100. Comparable historical depth is below ` +
-        "the required 7 days, so no trend was extrapolated. " +
-        `The conservative expected value at targetAt is ` +
+      : `Текущий глобальный индекс интереса AI-разработчиков — ` +
+        `${index}/100. Глубина сопоставимых исторических данных меньше ` +
+        "необходимых 7 дней, поэтому тренд не экстраполировался. " +
+        `Консервативное ожидаемое значение на целевую дату — ` +
         `${trend.predictedValue}/100.`;
 
     return {

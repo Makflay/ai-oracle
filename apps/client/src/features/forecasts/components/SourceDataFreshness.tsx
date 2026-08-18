@@ -27,8 +27,8 @@ const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
 });
 
 const freshnessLabels: Record<SourceDataFreshnessStatus, string> = {
-  [SourceDataFreshnessStatus.Fresh]: "FRESH",
-  [SourceDataFreshnessStatus.Stale]: "STALE",
+  [SourceDataFreshnessStatus.Fresh]: "АКТУАЛЬНЫЙ",
+  [SourceDataFreshnessStatus.Stale]: "УСТАРЕВШИЙ",
 };
 
 function formatSourceName(sourceKey: string): string {
@@ -111,12 +111,12 @@ export function SourceDataFreshness({ sourceData }: SourceDataFreshnessProps) {
     >
       <header className="source-freshness__header">
         <div>
-          <p className="source-freshness__eyebrow">Source data</p>
-          <h2 id="source-freshness-title">Data Freshness</h2>
+          <p className="source-freshness__eyebrow">Исходные данные</p>
+          <h2 id="source-freshness-title">Актуальность данных</h2>
         </div>
 
         <p>
-          Свежесть исходных данных, фактически использованных при построении
+          Актуальность исходных данных, фактически использованных при построении
           прогноза.
         </p>
       </header>
@@ -125,7 +125,7 @@ export function SourceDataFreshness({ sourceData }: SourceDataFreshnessProps) {
         <EmptyState
           compact
           title="Данные об источниках отсутствуют"
-          description="Backend не вернул freshness metadata для этого прогноза. Попробуйте получить свежий прогноз кнопкой Refresh forecast."
+          description="Сервер не вернул сведения о свежести исходных данных. Попробуйте обновить прогноз."
         />
       ) : (
         <div className="source-freshness__grid">

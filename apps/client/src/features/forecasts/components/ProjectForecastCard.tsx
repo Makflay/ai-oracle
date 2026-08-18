@@ -100,7 +100,7 @@ export function ProjectForecastCard({
     <article className="project-card">
       <header className="project-card__header">
         <div>
-          <p className="project-card__eyebrow">Project forecast</p>
+          <p className="project-card__eyebrow">Прогноз проекта</p>
           <h3>
             {" "}
             <Link
@@ -164,7 +164,7 @@ export function ProjectForecastCard({
             <ErrorState
               compact
               title="Не удалось создать прогноз"
-              description="Initial forecast generation завершился ошибкой."
+              description="Создание первого прогноза завершилось ошибкой."
               details={refreshError}
               action={
                 <button type="button" disabled={refreshing} onClick={onCreate}>
@@ -193,7 +193,7 @@ export function ProjectForecastCard({
 
           <dl className="project-card__metrics">
             <div>
-              <dt>Momentum score</dt>
+              <dt>Индекс динамики</dt>
               <dd>
                 {forecast.score}
                 <span>/100</span>
@@ -201,7 +201,7 @@ export function ProjectForecastCard({
             </div>
 
             <div>
-              <dt>Уверенность</dt>
+              <dt>Точность прогноза</dt>
               <dd>{formatConfidence(forecast.confidence)}</dd>
             </div>
 

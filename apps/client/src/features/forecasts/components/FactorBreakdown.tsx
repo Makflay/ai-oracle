@@ -24,6 +24,20 @@ function formatContribution(value: number): string {
   return value > 0 ? `+${formattedValue}` : formattedValue;
 }
 
+const metricLabels: Readonly<Record<string, string>> = {
+  downloads: "Загрузки",
+  likes: "Отметки «Нравится»",
+  mentions: "Упоминания",
+  score: "Оценка",
+  comments: "Комментарии",
+  engagement: "Вовлечённость",
+  publications: "Публикации",
+};
+
+function formatMetric(metricType: string): string {
+  return metricLabels[metricType] ?? formatIdentifier(metricType);
+}
+
 function formatIdentifier(value: string): string {
   return value
     .split("_")
@@ -52,8 +66,8 @@ export function FactorBreakdown({ factors }: FactorBreakdownProps) {
     >
       <header className="factor-breakdown__header">
         <div>
-          <p className="factor-breakdown__eyebrow">Explainability</p>
-          <h2 id="factor-breakdown-title">Factor Breakdown</h2>
+          <p className="factor-breakdown__eyebrow">Объяснение прогноза</p>
+          <h2 id="factor-breakdown-title">Вклад факторов</h2>
         </div>
 
         {factors.length > 0 ? (
@@ -68,18 +82,18 @@ export function FactorBreakdown({ factors }: FactorBreakdownProps) {
         <EmptyState
           compact
           title="Факторы отсутствуют"
-          description="Backend не вернул factor breakdown для этого прогноза. Попробуйте обновить прогноз доступной кнопкой Refresh forecast."
+          description="Сервер не вернул данные о влияющих факторах. Попробуйте обновить прогноз."
         />
       ) : (
         <div className="factor-breakdown__table-container">
           <table className="factor-breakdown__table">
             <thead>
               <tr>
-                <th scope="col">Источник / metric</th>
-                <th scope="col">Raw value</th>
-                <th scope="col">Normalized</th>
-                <th scope="col">Weight</th>
-                <th scope="col">Contribution</th>
+                <th scope="col">Источник / метрика</th>
+                <th scope="col">Исходное значение</th>
+                <th scope="col">Нормализованное значение</th>
+                <th scope="col">Вес</th>
+                <th scope="col">Вклад</th>
               </tr>
             </thead>
 
@@ -92,7 +106,7 @@ export function FactorBreakdown({ factors }: FactorBreakdownProps) {
                     </span>
 
                     <span className="factor-breakdown__metric">
-                      {formatIdentifier(factor.metricType)}
+                      {formatMetric(factor.metricType)}
                     </span>
                   </th>
 
@@ -128,7 +142,7 @@ export function FactorBreakdown({ factors }: FactorBreakdownProps) {
             <tfoot>
               <tr>
                 <th scope="row" colSpan={4}>
-                  Итоговая сумма contributions
+                  Итоговая сумма вкладов
                 </th>
 
                 <td>

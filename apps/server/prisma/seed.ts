@@ -24,35 +24,35 @@ const entities = [
     name: "Qwen",
     symbol: "QWEN",
     description:
-      "AI model family tracked for project popularity and developer interest.",
+      "Проверка прогнозСемейство AI-моделей, отслеживаемое для оценки популярности проекта и интереса разработчиков.а",
   },
   {
     slug: "deepseek",
     name: "DeepSeek",
     symbol: "DEEPSEEK",
     description:
-      "AI model family tracked for project popularity and developer interest.",
+      "Проверка прогнозСемейство AI-моделей, отслеживаемое для оценки популярности проекта и интереса разработчиков.а",
   },
   {
     slug: "mistral",
     name: "Mistral",
     symbol: "MISTRAL",
     description:
-      "AI model family tracked for project popularity and developer interest.",
+      "Проверка прогнозСемейство AI-моделей, отслеживаемое для оценки популярности проекта и интереса разработчиков.а",
   },
   {
     slug: "gemma",
     name: "Gemma",
     symbol: "GEMMA",
     description:
-      "AI model family tracked for project popularity and developer interest.",
+      "Проверка прогнозСемейство AI-моделей, отслеживаемое для оценки популярности проекта и интереса разработчиков.а",
   },
   {
     slug: "ai-developer-interest",
     name: "AI Developer Interest",
     symbol: "AI_DEV_INTEREST",
     description:
-      "System entity representing aggregated global developer interest in AI.",
+      "Системная сущность, представляющая совокупный глобальный интерес разработчиков к AI.",
   },
 ] as const;
 

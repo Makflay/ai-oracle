@@ -32,25 +32,25 @@ const createRiskCauses = (
     contribution:
       risk.components.confidenceDeficit *
       RISK_COMPONENT_WEIGHTS.confidenceDeficit,
-    message: "Forecast confidence is low.",
+    message: "Точность прогноза недостаточно высока.",
   },
   {
     code: RISK_REASON_CODES.sourceDisagreement,
     contribution:
       risk.components.sourceDisagreement *
       RISK_COMPONENT_WEIGHTS.sourceDisagreement,
-    message: "Data sources show conflicting signals.",
+    message: "Источники данных показывают противоречивые сигналы.",
   },
   {
     code: RISK_REASON_CODES.staleData,
     contribution: risk.components.staleness * RISK_COMPONENT_WEIGHTS.staleness,
-    message: "The forecast relies on stale data.",
+    message: "Прогноз основан на устаревших данных.",
   },
   {
     code: RISK_REASON_CODES.insufficientSignals,
     contribution:
       risk.components.dataShortage * RISK_COMPONENT_WEIGHTS.dataShortage,
-    message: "There are not enough signals to support the forecast.",
+    message: "Для надёжного прогноза недостаточно данных.",
   },
 ];
 
@@ -80,7 +80,9 @@ export const createForecastRiskReason = (
   if (risk.level === RiskLevel.Low) {
     return {
       code: primaryCause.code,
-      message: `Risk is low; the largest remaining uncertainty is: ${primaryCause.message.toLowerCase()}`,
+      message:
+        `Риск низкий. Основной оставшийся источник неопределённости: ` +
+        `${primaryCause.message.toLowerCase()}`,
     };
   }
 

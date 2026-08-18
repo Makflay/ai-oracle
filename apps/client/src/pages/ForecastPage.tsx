@@ -101,7 +101,7 @@ function ForecastDetails({ forecast }: ForecastDetailsProps) {
     <>
       <div className="forecast-details__overview">
         <div>
-          <p className="forecast-details__label">Текущий score</p>
+          <p className="forecast-details__label">Текущий индекс</p>
           <p className="forecast-details__score">{forecast.score}</p>
           <p className="forecast-details__scale">из 100</p>
         </div>
@@ -122,7 +122,7 @@ function ForecastDetails({ forecast }: ForecastDetailsProps) {
         </div>
 
         <div>
-          <dt>Уверенность</dt>
+          <dt>Точность прогноза</dt>
           <dd>{formatConfidence(forecast.confidence)}</dd>
         </div>
 
@@ -290,7 +290,7 @@ export function ForecastPage() {
   if (entityId === undefined) {
     return (
       <section className="forecast-page-state">
-        <p className="page__eyebrow">Not found</p>
+        <p className="page__eyebrow">Не найдено</p>
         <h1>Прогноз не найден</h1>
         <p>AI-проект с указанным идентификатором не существует.</p>
         <Link className="text-link" to="/">
@@ -303,7 +303,7 @@ export function ForecastPage() {
   if (forecastNotFound && entity !== undefined) {
     return (
       <section className="forecast-page-state" aria-busy={forecastRefreshing}>
-        <p className="page__eyebrow">Project forecast</p>
+        <p className="page__eyebrow">Прогноз проекта</p>
         <h1>{entity.name}</h1>
 
         <EmptyState
@@ -336,7 +336,7 @@ export function ForecastPage() {
           <ErrorState
             compact
             title="Не удалось создать прогноз"
-            description="Initial forecast generation завершился ошибкой. Можно повторить запрос."
+            description="Создание первого прогноза завершилось ошибкой. Можно повторить запрос."
             details={forecastRefreshError}
             action={
               <button
@@ -362,11 +362,11 @@ export function ForecastPage() {
   if (entitiesError !== null) {
     return (
       <section className="forecast-page-state">
-        <p className="page__eyebrow">Project forecast</p>
+        <p className="page__eyebrow">Прогноз проекта</p>
         <h1>Не удалось загрузить проект</h1>
         <ErrorState
           title="Список AI-проектов недоступен"
-          description="Без данных entity невозможно показать страницу прогноза."
+          description="Без данных об AI-проекте невозможно показать страницу прогноза."
           details={entitiesError}
           action={
             <button
@@ -406,11 +406,11 @@ export function ForecastPage() {
   if (forecastError !== null) {
     return (
       <section className="forecast-page-state">
-        <p className="page__eyebrow">Project forecast</p>
+        <p className="page__eyebrow">Прогноз проекта</p>
         <h1>{entity?.name ?? "Прогноз проекта"}</h1>
         <ErrorState
           title="Не удалось загрузить прогноз"
-          description="Запрос текущего project forecast завершился ошибкой."
+          description="Запрос текущего прогноза проекта завершился ошибкой."
           details={forecastError}
           action={
             <button
@@ -440,7 +440,7 @@ export function ForecastPage() {
   ) {
     return (
       <section className="forecast-page-state" role="status" aria-busy="true">
-        <p className="page__eyebrow">Project forecast</p>
+        <p className="page__eyebrow">Прогноз проекта</p>
         <h1>Загружаем прогноз…</h1>
       </section>
     );
@@ -450,7 +450,7 @@ export function ForecastPage() {
     <article className="forecast-details">
       <header className="forecast-details__header">
         <div>
-          <p className="page__eyebrow">Project forecast</p>
+          <p className="page__eyebrow">Прогноз проекта</p>
           <h1>{entity.name}</h1>
           {entity.description !== null ? <p>{entity.description}</p> : null}
         </div>
@@ -468,7 +468,7 @@ export function ForecastPage() {
               handleRefresh();
             }}
           >
-            Refresh forecast
+            Обновить прогноз
           </button>
         </div>
       </header>
@@ -479,7 +479,7 @@ export function ForecastPage() {
           role="status"
           aria-live="polite"
         >
-          Updating fresh data...
+          Обновляем данные…
         </div>
       ) : null}
 
@@ -497,7 +497,7 @@ export function ForecastPage() {
                 void handleRefresh();
               }}
             >
-              {forecastRefreshing ? "Обновляем…" : "Повторить refresh"}
+              {forecastRefreshing ? "Обновляем…" : "Повторить обновление"}
             </button>
           }
         />

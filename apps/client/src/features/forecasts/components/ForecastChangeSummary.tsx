@@ -50,16 +50,16 @@ export function ForecastChangeSummary({
     >
       <header className="forecast-change__header">
         <div>
-          <p className="forecast-change__eyebrow">Latest refresh</p>
-          <h2 id="forecast-change-title">Forecast updated</h2>
+          <p className="forecast-change__eyebrow">Последнее обновление</p>
+          <h2 id="forecast-change-title">Прогноз обновлён</h2>
         </div>
 
-        <span className="forecast-change__freshness">Updated just now</span>
+        <span className="forecast-change__freshness">Обновлено только что</span>
       </header>
 
       <dl className="forecast-change__items">
         <div data-change={getChangeStatus(previousScore, currentScore)}>
-          <dt>Score / index</dt>
+          <dt>Оценка / индекс</dt>
           <dd>
             <span>{formatNumber(previousScore)}</span>
             <span aria-hidden="true">→</span>
@@ -70,7 +70,7 @@ export function ForecastChangeSummary({
         <div
           data-change={getChangeStatus(previousConfidence, currentConfidence)}
         >
-          <dt>Confidence</dt>
+          <dt>Точность прогноза</dt>
           <dd>
             <span>{formatConfidence(previousConfidence)}</span>
             <span aria-hidden="true">→</span>
@@ -81,7 +81,7 @@ export function ForecastChangeSummary({
         <div
           data-change={getChangeStatus(previousPrediction, currentPrediction)}
         >
-          <dt>Prediction</dt>
+          <dt>Прогноз</dt>
           <dd>
             <span>{previousPrediction}</span>
             <span aria-hidden="true">→</span>

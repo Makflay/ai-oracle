@@ -110,7 +110,7 @@ function HeroContent({ forecast }: HeroContentProps) {
         </div>
 
         <div>
-          <dt>Уверенность</dt>
+          <dt>Точность прогноза</dt>
           <dd>{formatPercentage(forecast.confidence)}</dd>
         </div>
 
@@ -201,8 +201,8 @@ export function DeveloperInterestHeroCard() {
         aria-labelledby="developer-interest-title"
       >
         <header className="developer-hero__header">
-          <p>Global forecast</p>
-          <h2 id="developer-interest-title">AI Developer Interest</h2>
+          <p>Глобальный прогноз</p>
+          <h2 id="developer-interest-title">Интерес AI-разработчиков</h2>
         </header>
 
         <div className="developer-hero__state" role="status">
@@ -220,13 +220,13 @@ export function DeveloperInterestHeroCard() {
         aria-busy={developerInterestRefreshing}
       >
         <header className="developer-hero__header">
-          <p>Global forecast</p>
-          <h2 id="developer-interest-title">AI Developer Interest</h2>
+          <p>Глобальный прогноз</p>
+          <h2 id="developer-interest-title">Интерес AI-разработчиков</h2>
         </header>
 
         <EmptyState
           title="Глобальный прогноз ещё не создан"
-          description="Создайте первый Developer Interest forecast на основе актуальных данных Hugging Face, Hacker News и arXiv."
+          description="Создайте первый глобальный прогноз интереса AI-разработчиков на основе актуальных данных Hugging Face, Hacker News и arXiv."
           action={
             <button
               type="button"
@@ -256,7 +256,7 @@ export function DeveloperInterestHeroCard() {
           <ErrorState
             compact
             title="Не удалось создать прогноз"
-            description="Initial forecast generation завершился ошибкой. Можно повторить запрос."
+            description="Создание первого прогноза завершилось ошибкой. Можно повторить запрос."
             details={developerInterestRefreshError}
             action={
               <button
@@ -288,13 +288,13 @@ export function DeveloperInterestHeroCard() {
         aria-labelledby="developer-interest-title"
       >
         <header className="developer-hero__header">
-          <p>Global forecast</p>
-          <h2 id="developer-interest-title">AI Developer Interest</h2>
+          <p>Глобальный прогноз</p>
+          <h2 id="developer-interest-title">Интерес AI-разработчиков</h2>
         </header>
 
         <ErrorState
           title="Не удалось загрузить глобальный прогноз"
-          description="Developer Interest временно недоступен. Остальные разделы страницы продолжают работать."
+          description="Глобальный прогноз интереса AI-разработчиков временно недоступен. Остальные разделы страницы продолжают работать."
           details={developerInterestError}
           action={
             <button
@@ -319,13 +319,13 @@ export function DeveloperInterestHeroCard() {
         aria-labelledby="developer-interest-title"
       >
         <header className="developer-hero__header">
-          <p>Global forecast</p>
-          <h2 id="developer-interest-title">AI Developer Interest</h2>
+          <p>Глобальный прогноз</p>
+          <h2 id="developer-interest-title">Интерес AI-разработчиков</h2>
         </header>
 
         <EmptyState
           title="Глобальный прогноз ещё не создан"
-          description="Текущий Developer Interest forecast отсутствует. Проверьте историю предыдущих прогнозов или вернитесь позже."
+          description="Текущий глобальный прогноз отсутствует. Проверьте историю предыдущих прогнозов или вернитесь позже."
           action={
             <button
               type="button"
@@ -351,8 +351,8 @@ export function DeveloperInterestHeroCard() {
     >
       <header className="developer-hero__header">
         <div>
-          <p>Global forecast</p>
-          <h2 id="developer-interest-title">AI Developer Interest</h2>
+          <p>Глобальный прогноз</p>
+          <h2 id="developer-interest-title">Интерес AI-разработчиков</h2>
         </div>
 
         <button
@@ -363,7 +363,7 @@ export function DeveloperInterestHeroCard() {
             void handleRefresh();
           }}
         >
-          Refresh forecast
+          Обновить прогноз
         </button>
       </header>
 

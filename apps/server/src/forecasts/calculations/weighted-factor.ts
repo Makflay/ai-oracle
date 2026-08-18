@@ -104,9 +104,9 @@ function createDescription(
 
   return (
     `${metric.sourceKey} ${metric.type}: ` +
-    `normalized value ${metric.normalizedValue} ` +
-    `× weight ${weight} (${percentage}%) ` +
-    `= ${contribution} score points.`
+    `нормализованное значение ${metric.normalizedValue} ` +
+    `× вес ${weight} (${percentage}%) ` +
+    `= ${contribution} балла в итоговой оценке.`
   );
 }
 

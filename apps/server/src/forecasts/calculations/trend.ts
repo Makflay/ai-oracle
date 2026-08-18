@@ -231,8 +231,8 @@ export const explainForecastFactors = (
         ...factor,
         direction: PredictionDirection.Neutral,
         description:
-          `${factor.description} Comparable historical depth ` +
-          "is insufficient; no trend was inferred.",
+          `${factor.description} Глубина сопоставимых исторических данных ` +
+          "недостаточна, поэтому направление тренда не определялось.",
       };
     }
 
@@ -244,10 +244,10 @@ export const explainForecastFactors = (
       ...factor,
       direction: directionFromDelta(signalDelta),
       description:
-        `${factor.description} Baseline normalized value ` +
-        `${pair.baseline.normalizedValue} from ` +
-        `${round(pair.historySpanDays)} days ago; ` +
-        `observed signal delta ${signalDelta}.`,
+        `${factor.description} Базовое нормализованное значение — ` +
+        `${pair.baseline.normalizedValue}, получено ` +
+        `${round(pair.historySpanDays)} дн. назад; ` +
+        `наблюдаемое изменение сигнала — ${signalDelta}.`,
     };
   });
 };

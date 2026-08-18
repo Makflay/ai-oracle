@@ -44,16 +44,16 @@ const predictionLabels: Readonly<Record<string, string>> = {
 };
 
 const forecastTypeLabels: Record<ForecastType, string> = {
-  [ForecastType.ShortTerm]: "Short term",
-  [ForecastType.MediumTerm]: "Medium term",
-  [ForecastType.LongTerm]: "Long term",
+  [ForecastType.ShortTerm]: "Краткосрочный",
+  [ForecastType.MediumTerm]: "Среднесрочный",
+  [ForecastType.LongTerm]: "Долгосрочный",
 };
 
 const statusLabels: Record<ForecastStatus, string> = {
-  [ForecastStatus.Pending]: "Pending",
-  [ForecastStatus.Running]: "Running",
-  [ForecastStatus.Completed]: "Completed",
-  [ForecastStatus.Failed]: "Failed",
+  [ForecastStatus.Pending]: "Ожидает",
+  [ForecastStatus.Running]: "Выполняется",
+  [ForecastStatus.Completed]: "Завершён",
+  [ForecastStatus.Failed]: "Ошибка",
 };
 
 function formatDate(value: string): string {
@@ -157,23 +157,24 @@ export function HistoryPage() {
       <header className="history-page__header">
         <div>
           <p className="page__eyebrow">Forecast archive</p>
-          <h1>История прогнозов</h1>
+          <h1>Архив прогнозов</h1>
         </div>
 
         <p>
-          Сохранённые прогнозы AI-проектов и глобального Developer Interest.
+          Сохранённые прогнозы AI-проектов и глобального интереса
+          AI-разработчиков.
         </p>
       </header>
 
       <div className="history-filters" aria-label="Фильтры истории прогнозов">
         <label className="history-filter">
-          <span>Forecast Type</span>
+          <span>Тип прогноза</span>
 
           <select
             value={filters.forecastType ?? ""}
             onChange={(event) => handleForecastTypeChange(event.target.value)}
           >
-            <option value="">All forecast types</option>
+            <option value="">Все типы прогнозов</option>
 
             {Object.values(ForecastType).map((forecastType) => (
               <option key={forecastType} value={forecastType}>
@@ -184,13 +185,13 @@ export function HistoryPage() {
         </label>
 
         <label className="history-filter">
-          <span>Status</span>
+          <span>Статус</span>
 
           <select
             value={filters.status ?? ""}
             onChange={(event) => handleStatusChange(event.target.value)}
           >
-            <option value="">All statuses</option>
+            <option value="">Все статусы</option>
 
             {Object.values(ForecastStatus).map((status) => (
               <option key={status} value={status}>
@@ -201,13 +202,13 @@ export function HistoryPage() {
         </label>
 
         <label className="history-filter">
-          <span>Entity</span>
+          <span>Проект</span>
 
           <select
             value={filters.entityId ?? ""}
             onChange={(event) => handleEntityChange(event.target.value)}
           >
-            <option value="">All entities</option>
+            <option value="">Все проекты</option>
 
             {entities.map((entity) => (
               <option key={entity.id} value={entity.id}>
@@ -223,7 +224,7 @@ export function HistoryPage() {
           onClick={handleResetFilters}
           disabled={!hasActiveFilters}
         >
-          Reset filters
+          Сбросить фильтры
         </button>
       </div>
 
@@ -293,14 +294,14 @@ export function HistoryPage() {
             <table className="history-table">
               <thead>
                 <tr>
-                  <th scope="col">Created</th>
-                  <th scope="col">Entity</th>
-                  <th scope="col">Prediction</th>
-                  <th scope="col">Score</th>
-                  <th scope="col">Confidence</th>
-                  <th scope="col">Target</th>
-                  <th scope="col">Forecast Status</th>
-                  <th scope="col">Outcome</th>
+                  <th scope="col">Создан</th>
+                  <th scope="col">Проект</th>
+                  <th scope="col">Прогноз</th>
+                  <th scope="col">Оценка</th>
+                  <th scope="col">Точность прогноза</th>
+                  <th scope="col">Целевая дата</th>
+                  <th scope="col">Статус прогноза</th>
+                  <th scope="col">Результат</th>
                   <th scope="col">
                     <span className="history-table__action-label">
                       Действие
