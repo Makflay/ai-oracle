@@ -19,8 +19,6 @@ COPY . .
 
 FROM source AS server
 
-RUN npm run db:generate
-
 EXPOSE 3000
 
 CMD ["npm", "run", "start:server"]
