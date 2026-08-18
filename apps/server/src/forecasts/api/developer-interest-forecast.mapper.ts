@@ -4,7 +4,7 @@ import type { DeveloperInterestForecastDto } from "@ai-oracle/shared";
 
 import type { ForecastSnapshot } from "../queries/index.js";
 
-import { toProjectForecastDto } from "./project-forecast.mapper.js";
+import { toForecastDtoBase } from "./project-forecast.mapper.js";
 
 const isDeveloperInterestPrediction = (
   prediction: string,
@@ -23,7 +23,7 @@ export const toDeveloperInterestForecastDto = (
   }
 
   return {
-    ...toProjectForecastDto(forecast),
+    ...toForecastDtoBase(forecast),
     prediction: forecast.prediction,
   };
 };
