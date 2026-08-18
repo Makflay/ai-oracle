@@ -32,7 +32,7 @@ export function RiskExplanation({ risk, reason }: RiskExplanationProps) {
           className="risk-explanation__level"
           data-risk={risk.toLowerCase()}
         >
-          {risk}
+          {riskLabels[risk]}
         </span>
       </header>
 
