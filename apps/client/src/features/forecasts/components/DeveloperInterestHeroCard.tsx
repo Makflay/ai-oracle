@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { DeveloperInterestPrediction, RiskLevel } from "@ai-oracle/shared";
 import type { DeveloperInterestForecastDto } from "@ai-oracle/shared";
 
@@ -154,6 +153,7 @@ export function DeveloperInterestHeroCard() {
     developerInterestError,
     developerInterestRefreshing,
     developerInterestRefreshError,
+    developerInterestNotFound,
   } = useAppSelector((state) => state.forecasts);
 
   const [previousForecast, setPreviousForecast] =
@@ -177,7 +177,19 @@ export function DeveloperInterestHeroCard() {
         setPreviousForecast(previous);
       }
     } catch {
-      // Refresh error is already stored and rendered by the Redux slice.
+      // The error is handled through Redux state.
+    }
+  };
+
+  const handleCreate = async (): Promise<void> => {
+    if (developerInterestRefreshing || developerInterest !== null) {
+      return;
+    }
+
+    try {
+      await dispatch(refreshDeveloperInterestForecast()).unwrap();
+    } catch {
+      // The error is handled through Redux state.
     }
   };
 
@@ -200,7 +212,76 @@ export function DeveloperInterestHeroCard() {
     );
   }
 
-  if (developerInterestError !== null && developerInterest === null) {
+  if (developerInterestNotFound && developerInterest === null) {
+    return (
+      <section
+        className="developer-hero"
+        aria-labelledby="developer-interest-title"
+        aria-busy={developerInterestRefreshing}
+      >
+        <header className="developer-hero__header">
+          <p>Global forecast</p>
+          <h2 id="developer-interest-title">AI Developer Interest</h2>
+        </header>
+
+        <EmptyState
+          title="Глобальный прогноз ещё не создан"
+          description="Создайте первый Developer Interest forecast на основе актуальных данных Hugging Face, Hacker News и arXiv."
+          action={
+            <button
+              type="button"
+              disabled={developerInterestRefreshing}
+              onClick={() => {
+                void handleCreate();
+              }}
+            >
+              {developerInterestRefreshing
+                ? "Создаём прогноз…"
+                : "Создать прогноз"}
+            </button>
+          }
+        />
+
+        {developerInterestRefreshing ? (
+          <div
+            className="developer-hero__updating"
+            role="status"
+            aria-live="polite"
+          >
+            Получаем исходные данные и создаём прогноз…
+          </div>
+        ) : null}
+
+        {developerInterestRefreshError !== null ? (
+          <ErrorState
+            compact
+            title="Не удалось создать прогноз"
+            description="Initial forecast generation завершился ошибкой. Можно повторить запрос."
+            details={developerInterestRefreshError}
+            action={
+              <button
+                type="button"
+                disabled={developerInterestRefreshing}
+                onClick={() => {
+                  void handleCreate();
+                }}
+              >
+                {developerInterestRefreshing
+                  ? "Создаём…"
+                  : "Повторить создание"}
+              </button>
+            }
+          />
+        ) : null}
+      </section>
+    );
+  }
+
+  if (
+    developerInterestError !== null &&
+    !developerInterestNotFound &&
+    developerInterest === null
+  ) {
     return (
       <section
         className="developer-hero"
@@ -245,7 +326,19 @@ export function DeveloperInterestHeroCard() {
         <EmptyState
           title="Глобальный прогноз ещё не создан"
           description="Текущий Developer Interest forecast отсутствует. Проверьте историю предыдущих прогнозов или вернитесь позже."
-          action={<Link to="/history">Открыть историю</Link>}
+          action={
+            <button
+              type="button"
+              disabled={developerInterestRefreshing}
+              onClick={() => {
+                void handleCreate();
+              }}
+            >
+              {developerInterestRefreshing
+                ? "Создаём прогноз…"
+                : "Создать прогноз"}
+            </button>
+          }
         />
       </section>
     );

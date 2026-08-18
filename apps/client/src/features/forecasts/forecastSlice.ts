@@ -8,6 +8,11 @@ import type {
 } from "@ai-oracle/shared";
 
 import {
+  DeveloperInterestApiErrorCode,
+  ProjectForecastApiErrorCode,
+} from "@ai-oracle/shared";
+
+import {
   getDeveloperInterestForecast,
   getProjectForecast,
   ApiClientError,
@@ -15,7 +20,7 @@ import {
   refreshProjectForecast as requestProjectForecastRefresh,
 } from "../../api";
 
-interface ProjectForecastRequestError {
+interface ForecastRequestError {
   message: string;
   notFound: boolean;
 }
@@ -33,6 +38,7 @@ export interface ForecastState {
   developerInterest: DeveloperInterestForecastDto | null;
   developerInterestLoading: boolean;
   developerInterestError: string | null;
+  developerInterestNotFound: boolean;
 
   developerInterestRefreshing: boolean;
   developerInterestRefreshError: string | null;
@@ -52,6 +58,7 @@ const initialState: ForecastState = {
   developerInterest: null,
   developerInterestLoading: false,
   developerInterestError: null,
+  developerInterestNotFound: false,
 
   developerInterestRefreshing: false,
   developerInterestRefreshError: null,
@@ -70,7 +77,7 @@ export const fetchProjectForecast = createAsyncThunk<
   ProjectForecastDto,
   string,
   {
-    rejectValue: ProjectForecastRequestError;
+    rejectValue: ForecastRequestError;
   }
 >("forecasts/fetchProjectForecast", async (entityId, { rejectWithValue }) => {
   try {
@@ -78,7 +85,9 @@ export const fetchProjectForecast = createAsyncThunk<
   } catch (error: unknown) {
     return rejectWithValue({
       message: getErrorMessage(error),
-      notFound: error instanceof ApiClientError && error.statusCode === 404,
+      notFound:
+        error instanceof ApiClientError &&
+        error.code === ProjectForecastApiErrorCode.ForecastNotFound,
     });
   }
 });
@@ -87,7 +96,7 @@ export const fetchDeveloperInterestForecast = createAsyncThunk<
   DeveloperInterestForecastDto,
   void,
   {
-    rejectValue: string;
+    rejectValue: ForecastRequestError;
   }
 >(
   "forecasts/fetchDeveloperInterestForecast",
@@ -95,7 +104,12 @@ export const fetchDeveloperInterestForecast = createAsyncThunk<
     try {
       return await getDeveloperInterestForecast();
     } catch (error: unknown) {
-      return rejectWithValue(getErrorMessage(error));
+      return rejectWithValue({
+        message: getErrorMessage(error),
+        notFound:
+          error instanceof ApiClientError &&
+          error.code === DeveloperInterestApiErrorCode.ForecastNotFound,
+      });
     }
   },
 );
@@ -224,6 +238,10 @@ const forecastSlice = createSlice({
             ...state.projectNotFound,
             [entityId]: false,
           },
+          projectErrors: {
+            ...state.projectErrors,
+            [entityId]: null,
+          },
         };
       })
       .addCase(refreshProjectForecast.rejected, (state, action) => {
@@ -237,17 +255,21 @@ const forecastSlice = createSlice({
       .addCase(fetchDeveloperInterestForecast.pending, (state) => {
         state.developerInterestLoading = true;
         state.developerInterestError = null;
+        state.developerInterestNotFound = false;
       })
       .addCase(fetchDeveloperInterestForecast.fulfilled, (state, action) => ({
         ...state,
         developerInterest: action.payload,
         developerInterestLoading: false,
         developerInterestError: null,
+        developerInterestNotFound: false,
       }))
       .addCase(fetchDeveloperInterestForecast.rejected, (state, action) => {
         state.developerInterestLoading = false;
         state.developerInterestError =
-          action.payload ?? "Unable to load developer interest forecast";
+          action.payload?.message ??
+          "Unable to load developer interest forecast";
+        state.developerInterestNotFound = action.payload?.notFound ?? false;
       })
       .addCase(refreshDeveloperInterestForecast.pending, (state) => {
         state.developerInterestRefreshing = true;
@@ -260,6 +282,9 @@ const forecastSlice = createSlice({
         developerInterestRefreshing: false,
         developerInterestRefreshError: null,
         developerInterestRefreshResult: action.payload.refreshed,
+        developerInterestLoading: false,
+        developerInterestError: null,
+        developerInterestNotFound: false,
       }))
       .addCase(refreshDeveloperInterestForecast.rejected, (state, action) => {
         state.developerInterestRefreshing = false;

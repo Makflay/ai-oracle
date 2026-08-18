@@ -4,6 +4,7 @@ import { fetchEntities } from "../features/entities/entitiesSlice";
 import {
   fetchDeveloperInterestForecast,
   fetchProjectForecast,
+  refreshProjectForecast,
 } from "../features/forecasts/forecastSlice";
 
 import { DeveloperInterestHeroCard } from "../features/forecasts/components/DeveloperInterestHeroCard";
@@ -46,6 +47,9 @@ export function HomePage() {
     developerInterest,
     developerInterestLoading,
     developerInterestError,
+    projectNotFound,
+    projectRefreshing,
+    projectRefreshErrors,
   } = useAppSelector((state) => state.forecasts);
 
   const projectEntities = entities.filter(
@@ -192,6 +196,16 @@ export function HomePage() {
                 error={projectErrors[entity.id] ?? null}
                 onRetry={() => {
                   void dispatch(fetchProjectForecast(entity.id));
+                }}
+                notFound={projectNotFound[entity.id] ?? false}
+                refreshing={projectRefreshing[entity.id] ?? false}
+                refreshError={projectRefreshErrors[entity.id] ?? null}
+                onCreate={() => {
+                  if (projectRefreshing[entity.id] ?? false) {
+                    return;
+                  }
+
+                  void dispatch(refreshProjectForecast(entity.id));
                 }}
               />
             ))}

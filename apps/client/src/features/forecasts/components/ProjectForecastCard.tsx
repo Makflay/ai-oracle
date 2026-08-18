@@ -78,7 +78,11 @@ interface ProjectForecastCardProps {
   forecast?: ProjectForecastDto;
   loading: boolean;
   error: string | null;
+  notFound: boolean;
+  refreshing: boolean;
+  refreshError: string | null;
   onRetry: () => void;
+  onCreate: () => void;
 }
 
 export function ProjectForecastCard({
@@ -86,6 +90,10 @@ export function ProjectForecastCard({
   forecast,
   loading,
   error,
+  notFound,
+  refreshing,
+  refreshError,
+  onCreate,
   onRetry,
 }: ProjectForecastCardProps) {
   return (
@@ -115,7 +123,7 @@ export function ProjectForecastCard({
         </div>
       ) : null}
 
-      {error !== null ? (
+      {error !== null && !notFound ? (
         <ErrorState
           compact
           title="Не удалось загрузить прогноз"
@@ -130,10 +138,49 @@ export function ProjectForecastCard({
       ) : null}
 
       {!loading && error === null && forecast === undefined ? (
+        <>
+          <EmptyState
+            compact
+            title="Текущий прогноз отсутствует"
+            description={`Создайте первый прогноз популярности для ${entity.name}.`}
+            action={
+              <button type="button" disabled={refreshing} onClick={onCreate}>
+                {refreshing ? "Создаём прогноз…" : "Создать прогноз"}
+              </button>
+            }
+          />
+
+          {refreshing ? (
+            <div
+              className="project-card__state"
+              role="status"
+              aria-live="polite"
+            >
+              Получаем свежие данные и создаём прогноз…
+            </div>
+          ) : null}
+
+          {refreshError !== null ? (
+            <ErrorState
+              compact
+              title="Не удалось создать прогноз"
+              description="Initial forecast generation завершился ошибкой."
+              details={refreshError}
+              action={
+                <button type="button" disabled={refreshing} onClick={onCreate}>
+                  {refreshing ? "Создаём…" : "Повторить создание"}
+                </button>
+              }
+            />
+          ) : null}
+        </>
+      ) : null}
+
+      {!loading && !notFound && error === null && forecast === undefined ? (
         <EmptyState
           compact
-          title="Текущий прогноз отсутствует"
-          description="Для этого проекта прогноз ещё не был создан."
+          title="Прогноз недоступен"
+          description="Данные текущего прогноза отсутствуют."
         />
       ) : null}
 

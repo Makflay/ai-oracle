@@ -267,7 +267,23 @@ export function ForecastPage() {
         setPreviousForecast(previous);
       }
     } catch {
-      // Refresh error is already stored and rendered by the Redux slice.
+      // The error is handled through Redux state.
+    }
+  };
+
+  const handleCreate = async (): Promise<void> => {
+    if (
+      entityId === undefined ||
+      forecast !== undefined ||
+      forecastRefreshing
+    ) {
+      return;
+    }
+
+    try {
+      await dispatch(refreshProjectForecast(entityId)).unwrap();
+    } catch {
+      // The error is handled through Redux state.
     }
   };
 
@@ -286,15 +302,55 @@ export function ForecastPage() {
 
   if (forecastNotFound && entity !== undefined) {
     return (
-      <section className="forecast-page-state">
+      <section className="forecast-page-state" aria-busy={forecastRefreshing}>
         <p className="page__eyebrow">Project forecast</p>
         <h1>{entity.name}</h1>
 
         <EmptyState
           title="Текущий прогноз ещё не создан"
-          description="Для этого проекта пока нет актуального прогноза. Можно проверить предыдущие результаты в истории."
-          action={<Link to="/history">Открыть историю</Link>}
+          description="Создайте первый прогноз на основе актуальных данных Hugging Face, Hacker News и arXiv."
+          action={
+            <button
+              type="button"
+              disabled={forecastRefreshing}
+              onClick={() => {
+                void handleCreate();
+              }}
+            >
+              {forecastRefreshing ? "Создаём прогноз…" : "Создать прогноз"}
+            </button>
+          }
         />
+
+        {forecastRefreshing ? (
+          <div
+            className="forecast-details__updating"
+            role="status"
+            aria-live="polite"
+          >
+            Получаем свежие данные и создаём прогноз…
+          </div>
+        ) : null}
+
+        {forecastRefreshError !== null ? (
+          <ErrorState
+            compact
+            title="Не удалось создать прогноз"
+            description="Initial forecast generation завершился ошибкой. Можно повторить запрос."
+            details={forecastRefreshError}
+            action={
+              <button
+                type="button"
+                disabled={forecastRefreshing}
+                onClick={() => {
+                  void handleCreate();
+                }}
+              >
+                {forecastRefreshing ? "Создаём…" : "Повторить создание"}
+              </button>
+            }
+          />
+        ) : null}
 
         <Link className="text-link" to="/">
           ← Вернуться к прогнозам
