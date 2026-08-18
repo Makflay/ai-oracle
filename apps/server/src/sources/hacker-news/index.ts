@@ -4,4 +4,6 @@ export type {
   HackerNewsAdapterOptions,
   HackerNewsFeed,
   HackerNewsStoryData,
+  HackerNewsNoMatchesData,
+  HackerNewsObservationData,
 } from "./hacker-news.types.js";

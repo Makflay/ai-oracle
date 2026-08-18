@@ -11,11 +11,11 @@ import type {
   HackerNewsAdapterOptions,
   HackerNewsFeed,
   HackerNewsStoryData,
+  HackerNewsObservationData,
 } from "./hacker-news.types.js";
 
 const DEFAULT_BASE_URL = "https://hacker-news.firebaseio.com/v0";
 
-const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 const DEFAULT_SCAN_MULTIPLIER = 5;
 const DEFAULT_CONCURRENCY = 10;
@@ -57,7 +57,7 @@ class HackerNewsResponseError extends Error {
   }
 }
 
-export class HackerNewsDataSource implements DataSource<HackerNewsStoryData> {
+export class HackerNewsDataSource implements DataSource<HackerNewsObservationData> {
   readonly key = "hacker_news";
 
   private readonly keywords: readonly string[];
@@ -96,7 +96,7 @@ export class HackerNewsDataSource implements DataSource<HackerNewsStoryData> {
 
   async fetch(
     options?: DataSourceFetchOptions,
-  ): Promise<DataSourceResult<HackerNewsStoryData>> {
+  ): Promise<DataSourceResult<HackerNewsObservationData>> {
     const offset = this.parseCursor(options?.cursor);
 
     if (offset === null) {
@@ -165,9 +165,22 @@ export class HackerNewsDataSource implements DataSource<HackerNewsStoryData> {
       const nextCursor =
         nextOffset < storyIds.length ? String(nextOffset) : undefined;
 
+      const items: readonly HackerNewsObservationData[] =
+        stories.length > 0
+          ? stories
+          : [
+              {
+                mentionCount: 0,
+                score: 0,
+                commentCount: 0,
+                matchedKeywords: [],
+                scannedStoryCount: candidateIds.length,
+              },
+            ];
+
       return {
         success: true,
-        items: stories,
+        items,
         fetchedAt: new Date().toISOString(),
         ...(nextCursor ? { nextCursor } : {}),
       };
@@ -328,17 +341,15 @@ export class HackerNewsDataSource implements DataSource<HackerNewsStoryData> {
   }
 
   private normalizeLimit(limit: number | undefined): number {
-    if (limit === undefined || !Number.isFinite(limit)) {
-      return DEFAULT_LIMIT;
-    }
+    const requestedLimit = limit ?? config.sources.requestLimit;
 
-    return Math.min(MAX_LIMIT, Math.max(1, Math.floor(limit)));
+    return Math.min(MAX_LIMIT, Math.max(1, Math.floor(requestedLimit)));
   }
 
   private createFailure(
     error: unknown,
     externalSignal?: AbortSignal,
-  ): DataSourceResult<HackerNewsStoryData> {
+  ): DataSourceResult<HackerNewsObservationData> {
     if (externalSignal?.aborted) {
       return {
         success: false,

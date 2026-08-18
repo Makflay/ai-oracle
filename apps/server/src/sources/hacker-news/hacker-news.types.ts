@@ -24,3 +24,15 @@ export interface HackerNewsStoryData {
   readonly childIds: readonly number[];
   readonly publishedAt: string;
 }
+
+export interface HackerNewsNoMatchesData {
+  readonly mentionCount: 0;
+  readonly score: 0;
+  readonly commentCount: 0;
+  readonly matchedKeywords: readonly [];
+  readonly scannedStoryCount: number;
+}
+
+export type HackerNewsObservationData =
+  | HackerNewsStoryData
+  | HackerNewsNoMatchesData;
