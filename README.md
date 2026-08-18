@@ -301,7 +301,7 @@ SOURCE_REQUEST_LIMIT=20
 
 ```bash
 npm run db:generate
-npm run db:migrate
+npm run db:deploy
 npm run db:seed
 ```
 
