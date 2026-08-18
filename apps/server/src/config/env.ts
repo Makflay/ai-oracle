@@ -1,10 +1,14 @@
 import { loadEnvFile } from "node:process";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { z } from "zod";
 
+const currentDir = dirname(fileURLToPath(import.meta.url));
+
 function loadLocalEnvironment(): void {
   try {
-    loadEnvFile();
+    loadEnvFile(resolve(currentDir, "../../../../.env"));
   } catch (error: unknown) {
     const errorCode = (error as NodeJS.ErrnoException).code;
 
@@ -15,17 +19,6 @@ function loadLocalEnvironment(): void {
 }
 
 loadLocalEnvironment();
-
-const httpUrlSchema = z.url().refine(
-  (value) => {
-    const protocol = new URL(value).protocol;
-
-    return protocol === "http:" || protocol === "https:";
-  },
-  {
-    message: "URL must use HTTP or HTTPS",
-  },
-);
 
 const environmentSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65_535).default(3000),

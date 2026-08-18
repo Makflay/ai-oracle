@@ -25,6 +25,13 @@ const {
 
 app.use(express.json());
 
+app.get("/api/health", (_request, response) => {
+  response.status(200).json({
+    status: "ok",
+    service: "ai-oracle-server",
+  });
+});
+
 app.use("/api/entities", createEntityRouter(entityService));
 
 app.use(
@@ -49,4 +56,6 @@ app.use("/api/forecasts", createForecastHistoryRouter(forecastHistoryService));
 
 app.use(apiErrorHandler);
 
-app.listen(config.port);
+app.listen(config.port, () => {
+  console.log(`AI Oracle server started at http://localhost:${config.port}`);
+});
