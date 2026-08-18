@@ -18,6 +18,7 @@ import { RiskExplanation } from "../features/forecasts/components/RiskExplanatio
 import { ForecastChangeSummary } from "../features/forecasts/components/ForecastChangeSummary";
 import { ForecastOutcome } from "../features/forecasts/components/ForecastOutcome";
 import { EmptyState } from "../features/forecasts/components/EmptyState";
+import { ErrorState } from "../features/forecasts/components/ErrorState";
 
 import "./ForecastPage.css";
 
@@ -96,10 +97,6 @@ interface ForecastDetailsProps {
 }
 
 function ForecastDetails({ forecast }: ForecastDetailsProps) {
-  const dispatch = useAppDispatch();
-  const [previousForecast, setPreviousForecast] =
-    useState<ProjectForecastDto | null>(null);
-
   return (
     <>
       <div className="forecast-details__overview">
@@ -274,7 +271,7 @@ export function ForecastPage() {
     }
   };
 
-  if (!entitiesLoading && entities.length > 0 && entityId === undefined) {
+  if (entityId === undefined) {
     return (
       <section className="forecast-page-state">
         <p className="page__eyebrow">Not found</p>
@@ -308,10 +305,25 @@ export function ForecastPage() {
 
   if (entitiesError !== null) {
     return (
-      <section className="forecast-page-state" role="alert">
-        <p className="page__eyebrow">Ошибка</p>
+      <section className="forecast-page-state">
+        <p className="page__eyebrow">Project forecast</p>
         <h1>Не удалось загрузить проект</h1>
-        <p>{entitiesError}</p>
+        <ErrorState
+          title="Список AI-проектов недоступен"
+          description="Без данных entity невозможно показать страницу прогноза."
+          details={entitiesError}
+          action={
+            <button
+              type="button"
+              disabled={entitiesLoading}
+              onClick={() => {
+                void dispatch(fetchEntities());
+              }}
+            >
+              {entitiesLoading ? "Повторяем…" : "Повторить"}
+            </button>
+          }
+        />
         <Link className="text-link" to="/">
           Вернуться к прогнозам
         </Link>
@@ -337,10 +349,25 @@ export function ForecastPage() {
 
   if (forecastError !== null) {
     return (
-      <section className="forecast-page-state" role="alert">
-        <p className="page__eyebrow">Ошибка</p>
-        <h1>Не удалось загрузить прогноз</h1>
-        <p>{forecastError}</p>
+      <section className="forecast-page-state">
+        <p className="page__eyebrow">Project forecast</p>
+        <h1>{entity?.name ?? "Прогноз проекта"}</h1>
+        <ErrorState
+          title="Не удалось загрузить прогноз"
+          description="Запрос текущего project forecast завершился ошибкой."
+          details={forecastError}
+          action={
+            <button
+              type="button"
+              disabled={forecastLoading}
+              onClick={() => {
+                void dispatch(fetchProjectForecast(entityId));
+              }}
+            >
+              {forecastLoading ? "Повторяем…" : "Повторить"}
+            </button>
+          }
+        />
         <Link className="text-link" to="/">
           Вернуться к прогнозам
         </Link>
@@ -401,9 +428,23 @@ export function ForecastPage() {
       ) : null}
 
       {forecastRefreshError !== null ? (
-        <div className="forecast-details__refresh-error" role="alert">
-          {forecastRefreshError}
-        </div>
+        <ErrorState
+          compact
+          title="Не удалось обновить прогноз"
+          description="Предыдущий прогноз сохранён на экране. Можно повторить обновление."
+          details={forecastRefreshError}
+          action={
+            <button
+              type="button"
+              disabled={forecastRefreshing}
+              onClick={() => {
+                void handleRefresh();
+              }}
+            >
+              {forecastRefreshing ? "Обновляем…" : "Повторить refresh"}
+            </button>
+          }
+        />
       ) : null}
 
       {previousForecast !== null ? (

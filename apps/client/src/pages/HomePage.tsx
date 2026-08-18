@@ -9,6 +9,7 @@ import {
 import { DeveloperInterestHeroCard } from "../features/forecasts/components/DeveloperInterestHeroCard";
 import { ProjectForecastCard } from "../features/forecasts/components/ProjectForecastCard";
 import { EmptyState } from "../features/forecasts/components/EmptyState";
+import { ErrorState } from "../features/forecasts/components/ErrorState";
 
 import "./HomePage.css";
 
@@ -138,7 +139,27 @@ export function HomePage() {
         ) : null}
 
         {entitiesError !== null ? (
-          <StateContainer kind="error">{entitiesError}</StateContainer>
+          <ErrorState
+            compact={entities.length > 0}
+            title="Не удалось загрузить список AI-проектов"
+            description={
+              entities.length > 0
+                ? "Показываем ранее загруженный список. Можно повторить запрос."
+                : "Project forecasts недоступны без списка AI-проектов."
+            }
+            details={entitiesError}
+            action={
+              <button
+                type="button"
+                disabled={entitiesLoading}
+                onClick={() => {
+                  void dispatch(fetchEntities());
+                }}
+              >
+                {entitiesLoading ? "Повторяем…" : "Повторить"}
+              </button>
+            }
+          />
         ) : null}
 
         {!entitiesLoading &&
@@ -169,6 +190,9 @@ export function HomePage() {
                 forecast={projectForecasts[entity.id]}
                 loading={projectLoading[entity.id] ?? false}
                 error={projectErrors[entity.id] ?? null}
+                onRetry={() => {
+                  void dispatch(fetchProjectForecast(entity.id));
+                }}
               />
             ))}
           </div>

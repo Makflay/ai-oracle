@@ -5,6 +5,7 @@ import { ProjectPopularityPrediction, RiskLevel } from "@ai-oracle/shared";
 import type { ForecastEntity, ProjectForecastDto } from "@ai-oracle/shared";
 
 import { EmptyState } from "./EmptyState";
+import { ErrorState } from "./ErrorState";
 
 import "./ProjectForecastCard.css";
 
@@ -77,6 +78,7 @@ interface ProjectForecastCardProps {
   forecast?: ProjectForecastDto;
   loading: boolean;
   error: string | null;
+  onRetry: () => void;
 }
 
 export function ProjectForecastCard({
@@ -84,101 +86,115 @@ export function ProjectForecastCard({
   forecast,
   loading,
   error,
+  onRetry,
 }: ProjectForecastCardProps) {
   return (
-    <Link
-      className="project-card"
-      to={`/forecasts/${entity.id}`}
-      aria-label={`Открыть прогноз проекта ${entity.name}`}
-    >
-      <article>
-        <header className="project-card__header">
-          <div>
-            <p className="project-card__eyebrow">Project forecast</p>
-            <h3>{entity.name}</h3>
+    <article className="project-card">
+      <header className="project-card__header">
+        <div>
+          <p className="project-card__eyebrow">Project forecast</p>
+          <h3>
+            {" "}
+            <Link
+              className="project-card__title-link"
+              to={`/forecasts/${entity.id}`}
+            >
+              {entity.name}
+            </Link>
+          </h3>
+        </div>
+
+        {entity.symbol !== null ? (
+          <span className="project-card__symbol">{entity.symbol}</span>
+        ) : null}
+      </header>
+
+      {loading && forecast === undefined ? (
+        <div className="project-card__state" role="status" aria-live="polite">
+          Загружаем прогноз…
+        </div>
+      ) : null}
+
+      {error !== null ? (
+        <ErrorState
+          compact
+          title="Не удалось загрузить прогноз"
+          description={`Прогноз для ${entity.name} не был загружен.`}
+          details={error}
+          action={
+            <button type="button" disabled={loading} onClick={onRetry}>
+              {loading ? "Повторяем…" : "Повторить"}
+            </button>
+          }
+        />
+      ) : null}
+
+      {!loading && error === null && forecast === undefined ? (
+        <EmptyState
+          compact
+          title="Текущий прогноз отсутствует"
+          description="Для этого проекта прогноз ещё не был создан."
+        />
+      ) : null}
+
+      {forecast !== undefined && error === null ? (
+        <>
+          <div className="project-card__prediction">
+            <span>Прогноз на 14 дней</span>
+            <strong>{predictionLabels[forecast.prediction]}</strong>
           </div>
 
-          {entity.symbol !== null ? (
-            <span className="project-card__symbol">{entity.symbol}</span>
-          ) : null}
-        </header>
-
-        {loading && forecast === undefined ? (
-          <div className="project-card__state" role="status" aria-live="polite">
-            Загружаем прогноз…
-          </div>
-        ) : null}
-
-        {error !== null ? (
-          <div
-            className="project-card__state project-card__state--error"
-            role="alert"
-          >
-            {error}
-          </div>
-        ) : null}
-
-        {!loading && error === null && forecast === undefined ? (
-          <EmptyState
-            compact
-            title="Текущий прогноз отсутствует"
-            description="Для этого проекта прогноз ещё не был создан."
-          />
-        ) : null}
-
-        {forecast !== undefined && error === null ? (
-          <>
-            <div className="project-card__prediction">
-              <span>Прогноз на 14 дней</span>
-              <strong>{predictionLabels[forecast.prediction]}</strong>
+          <dl className="project-card__metrics">
+            <div>
+              <dt>Momentum score</dt>
+              <dd>
+                {forecast.score}
+                <span>/100</span>
+              </dd>
             </div>
 
-            <dl className="project-card__metrics">
-              <div>
-                <dt>Momentum score</dt>
-                <dd>
-                  {forecast.score}
-                  <span>/100</span>
-                </dd>
-              </div>
+            <div>
+              <dt>Уверенность</dt>
+              <dd>{formatConfidence(forecast.confidence)}</dd>
+            </div>
 
-              <div>
-                <dt>Уверенность</dt>
-                <dd>{formatConfidence(forecast.confidence)}</dd>
-              </div>
+            <div>
+              <dt>Риск</dt>
+              <dd>
+                <span
+                  className="project-card__risk"
+                  data-risk={forecast.risk.toLowerCase()}
+                >
+                  {riskLabels[forecast.risk]}
+                </span>
+              </dd>
+            </div>
 
-              <div>
-                <dt>Риск</dt>
-                <dd>
-                  <span
-                    className="project-card__risk"
-                    data-risk={forecast.risk.toLowerCase()}
-                  >
-                    {riskLabels[forecast.risk]}
-                  </span>
-                </dd>
-              </div>
+            <div>
+              <dt>Целевая дата</dt>
+              <dd>
+                <time dateTime={forecast.targetAt}>
+                  {formatTargetDate(forecast.targetAt)}
+                </time>
+              </dd>
+            </div>
+          </dl>
 
-              <div>
-                <dt>Целевая дата</dt>
-                <dd>
-                  <time dateTime={forecast.targetAt}>
-                    {formatTargetDate(forecast.targetAt)}
-                  </time>
-                </dd>
-              </div>
-            </dl>
+          <footer className="project-card__footer">
+            <time dateTime={forecast.createdAt}>
+              {formatFreshness(forecast.createdAt)}
+            </time>
 
-            <footer className="project-card__footer">
-              <time dateTime={forecast.createdAt}>
-                {formatFreshness(forecast.createdAt)}
-              </time>
-
-              <span aria-hidden="true">Подробнее →</span>
-            </footer>
-          </>
-        ) : null}
-      </article>
-    </Link>
+            <Link
+              className="project-card__details-link"
+              to={`/forecasts/${entity.id}`}
+              aria-label={`Открыть прогноз проекта ${entity.name}`}
+            >
+              Подробнее →
+            </Link>
+          </footer>
+        </>
+      ) : null}
+    </article>
   );
 }

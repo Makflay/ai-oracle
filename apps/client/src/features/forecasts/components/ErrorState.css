@@ -1,0 +1,92 @@
+.error-state {
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+  color: #fecaca;
+  background: #321820;
+  border: 1px solid #71313e;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+.error-state__content {
+  display: grid;
+  justify-items: center;
+  max-width: 620px;
+  gap: 0.5rem;
+}
+
+.error-state__content h3 {
+  margin: 0;
+  color: #fee2e2;
+  font-size: 1.125rem;
+}
+
+.error-state__content p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.error-state__details {
+  color: #fca5a5;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.error-state__action {
+  display: flex;
+  justify-content: center;
+}
+
+.error-state__action > button,
+.error-state__action > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0.55rem 0.9rem;
+  color: #321820;
+  background: #fecaca;
+  border: 1px solid #fecaca;
+  border-radius: 0.55rem;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.error-state__action > button:hover:not(:disabled),
+.error-state__action > a:hover {
+  filter: brightness(1.08);
+}
+
+.error-state__action > button:focus-visible,
+.error-state__action > a:focus-visible {
+  outline: 2px solid #fecaca;
+  outline-offset: 3px;
+}
+
+.error-state__action > button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.error-state--compact {
+  justify-items: start;
+  gap: 0.75rem;
+  padding: 1rem;
+  text-align: left;
+}
+
+.error-state--compact .error-state__content {
+  justify-items: start;
+}
+
+.error-state--compact .error-state__content h3 {
+  font-size: 0.95rem;
+}
+
+.error-state--compact .error-state__content p {
+  font-size: 0.875rem;
+}

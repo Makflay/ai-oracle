@@ -20,6 +20,7 @@ import {
 } from "../features/history/historySlice";
 import { ForecastOutcome } from "../features/forecasts/components/ForecastOutcome";
 import { EmptyState } from "../features/forecasts/components/EmptyState";
+import { ErrorState } from "../features/forecasts/components/ErrorState";
 
 import "./HistoryPage.css";
 
@@ -233,12 +234,25 @@ export function HistoryPage() {
       ) : null}
 
       {historyError !== null ? (
-        <div
-          className="history-page__state history-page__state--error"
-          role="alert"
-        >
-          {historyError}
-        </div>
+        <ErrorState
+          compact={history.length > 0}
+          title="Не удалось загрузить историю"
+          description={
+            history.length > 0
+              ? "Показываем ранее загруженные записи. Повторите запрос, чтобы получить актуальные данные."
+              : "История прогнозов временно недоступна."
+          }
+          details={historyError}
+          action={
+            <button
+              type="button"
+              disabled={historyLoading}
+              onClick={reloadHistory}
+            >
+              {historyLoading ? "Повторяем…" : "Повторить"}
+            </button>
+          }
+        />
       ) : null}
 
       {!historyLoading &&

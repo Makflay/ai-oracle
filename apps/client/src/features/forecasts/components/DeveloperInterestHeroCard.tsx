@@ -4,10 +4,14 @@ import { DeveloperInterestPrediction, RiskLevel } from "@ai-oracle/shared";
 import type { DeveloperInterestForecastDto } from "@ai-oracle/shared";
 
 import { useAppSelector, useAppDispatch } from "../../../app/hooks";
-import { refreshDeveloperInterestForecast } from "../forecastSlice";
+import {
+  refreshDeveloperInterestForecast,
+  fetchDeveloperInterestForecast,
+} from "../forecastSlice";
 
 import { ForecastChangeSummary } from "./ForecastChangeSummary";
 import { EmptyState } from "./EmptyState";
+import { ErrorState } from "./ErrorState";
 
 import "./DeveloperInterestHeroCard.css";
 
@@ -40,9 +44,6 @@ function formatTargetDate(value: string): string {
 }
 
 function formatFreshness(value: string): string {
-  const dispatch = useAppDispatch();
-  const [previousForecast, setPreviousForecast] =
-    useState<DeveloperInterestForecastDto | null>(null);
   const createdAt = new Date(value);
   const createdAtTime = createdAt.getTime();
 
@@ -159,7 +160,7 @@ export function DeveloperInterestHeroCard() {
     useState<DeveloperInterestForecastDto | null>(null);
 
   const handleRefresh = async (): Promise<void> => {
-    if (!developerInterestRefreshing || developerInterest === null) {
+    if (developerInterestRefreshing || developerInterest === null) {
       return;
     }
 
@@ -199,7 +200,7 @@ export function DeveloperInterestHeroCard() {
     );
   }
 
-  if (developerInterestError !== null) {
+  if (developerInterestError !== null && developerInterest === null) {
     return (
       <section
         className="developer-hero"
@@ -210,12 +211,22 @@ export function DeveloperInterestHeroCard() {
           <h2 id="developer-interest-title">AI Developer Interest</h2>
         </header>
 
-        <div
-          className="developer-hero__state developer-hero__state--error"
-          role="alert"
-        >
-          {developerInterestError}
-        </div>
+        <ErrorState
+          title="Не удалось загрузить глобальный прогноз"
+          description="Developer Interest временно недоступен. Остальные разделы страницы продолжают работать."
+          details={developerInterestError}
+          action={
+            <button
+              type="button"
+              disabled={developerInterestLoading}
+              onClick={() => {
+                void dispatch(fetchDeveloperInterestForecast());
+              }}
+            >
+              {developerInterestLoading ? "Повторяем…" : "Повторить"}
+            </button>
+          }
+        />
       </section>
     );
   }
@@ -274,9 +285,23 @@ export function DeveloperInterestHeroCard() {
       ) : null}
 
       {developerInterestRefreshError !== null ? (
-        <div className="developer-hero__refresh-error" role="alert">
-          {developerInterestRefreshError}
-        </div>
+        <ErrorState
+          compact
+          title="Не удалось обновить прогноз"
+          description="Текущий прогноз сохранён на экране. Можно повторить обновление."
+          details={developerInterestRefreshError}
+          action={
+            <button
+              type="button"
+              disabled={developerInterestRefreshing}
+              onClick={() => {
+                void handleRefresh();
+              }}
+            >
+              {developerInterestRefreshing ? "Обновляем…" : "Повторить refresh"}
+            </button>
+          }
+        />
       ) : null}
 
       {previousForecast !== null ? (
